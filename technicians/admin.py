@@ -3,15 +3,36 @@ from .models import TechnicianProfile
 
 @admin.register(TechnicianProfile)
 class TechnicianProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "professional_title", "experience", "status", "created_at")
+
+    list_display = ("user","professional_title","experience","status","created_at",)
     list_filter = ("status",)
-    search_fields = ("user__username", "user__first_name", "user__last_name", "professional_title")
-    actions = ["approve_selected", "reject_selected"]
+    search_fields = ("user__username","user__email","professional_title",)
+    readonly_fields = ("created_at","updated_at",)
+    fieldsets = (
+        ("Información del técnico",{"fields": ("user","professional_title","description","experience","phone",)}),
 
-    @admin.action(description="Aprobar técnicos seleccionados")
-    def approve_selected(self, request, queryset):
-        queryset.update(status="APROBADO", rejection_reason="")
+        ("Documentación",{"fields": ("identity_document","professional_document","additional_document",)}),
 
-    @admin.action(description="Rechazar técnicos seleccionados")
-    def reject_selected(self, request, queryset):
-        queryset.update(status="RECHAZADO")
+        ("Revisión",{"fields": ("status","admin_feedback","rejection_reason",)}),
+
+        ("Fechas",{"fields": ("created_at","updated_at",)}),
+    )
+def approve_technician(modeladmin, request, queryset):
+
+    for technician in queryset:
+
+        technician.status = TechnicianProfile.Status.APROBADO
+        technician.admin_feedback = "Solicitud aprobada."
+        technician.save()
+
+        technician.user.role = "TECNICO"
+        technician.user.save()
+def reject_technician(modeladmin, request, queryset):
+
+    for technician in queryset:
+
+        technician.status = TechnicianProfile.Status.RECHAZADO
+        technician.user.role = "USUARIO"
+        technician.save()
+
+        technician.user.save()

@@ -12,6 +12,12 @@
                 <a href="{% url 'accounts:dashboard' %}" class="rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">Panel</a>
                 {% if user.role == "TECNICO" %}
                     <a href="{% url 'technicians:profile' %}" class="hidden rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 md:block">Mi perfil</a>
+                    <a
+    href="{% url 'accounts:profile' %}"
+    class="..."
+>
+    Mi perfil
+</a>
                 {% endif %}
                 <a href="{% url 'accounts:logout' %}" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Salir</a>
             {% else %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="mx-auto max-w-3xl px-6 py-12">
+
+    <div class="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
+
+        <h1 class="text-2xl font-bold text-slate-900">
+            Solicitud para ser técnico
+        </h1>
+
+        {% if application.status == "PENDIENTE" %}
+
+            <div class="mt-6 rounded-2xl bg-amber-50 p-6">
+
+                <h2 class="font-bold text-amber-900">
+                    Solicitud pendiente
+                </h2>
+
+                <p class="mt-2 text-amber-800">
+                    Tu solicitud fue enviada correctamente y está siendo revisada por un administrador.
+                </p>
+
+            </div>
+
+        {% elif application.status == "APROBADO" %}
+
+            <div class="mt-6 rounded-2xl bg-emerald-50 p-6">
+
+                <h2 class="font-bold text-emerald-900">
+                    Solicitud aprobada
+                </h2>
+
+                <p class="mt-2 text-emerald-800">
+                    Ya puedes utilizar las funciones disponibles para técnicos.
+                </p>
+
+            </div>
+
+        {% elif application.status == "RECHAZADO" %}
+
+            <div class="mt-6 rounded-2xl bg-red-50 p-6">
+
+                <h2 class="font-bold text-red-900">
+                    Solicitud rechazada
+                </h2>
+
+                {% if application.admin_feedback %}
+
+                    <p class="mt-4 font-semibold text-red-900">
+                        Retroalimentación del administrador:
+                    </p>
+
+                    <p class="mt-2 text-red-800">
+                        {{ application.admin_feedback }}
+                    </p>
+
+                {% endif %}
+
+                <a
+                    href="{% url 'technicians:application' %}"
+                    class="mt-6 inline-block rounded-xl bg-red-600 px-6 py-3 font-semibold text-white"
+                >
+                    Corregir solicitud
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
