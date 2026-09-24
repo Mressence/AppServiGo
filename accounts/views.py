@@ -5,6 +5,7 @@ from django.shortcuts import redirect, render
 
 from technicians.models import TechnicianProfile
 from .forms import RegisterForm
+from .forms import ProfileForm
 
 def register(request):
     if request.user.is_authenticated:
@@ -47,3 +48,26 @@ def dashboard(request):
     if request.user.role == "TECNICO":
         context["technician"] = getattr(request.user, "technician_profile", None)
     return render(request, "accounts/dashboard.html", context)
+
+@login_required
+def profile(request):
+
+    if request.method == "POST":
+        form = ProfileForm(
+            request.POST,
+            request.FILES,
+            instance=request.user
+        )
+
+        if form.is_valid():
+            form.save()
+            return redirect("accounts:profile")
+
+    else:
+        form = ProfileForm(instance=request.user)
+
+    return render(
+        request,
+        "accounts/profile.html",
+        {"form": form}
+    )

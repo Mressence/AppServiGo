@@ -3,6 +3,7 @@ from . import views
 
 app_name = "technicians"
 
-urlpatterns = [
-    path("perfil/", views.profile, name="profile"),
+urlpatterns = [path("solicitud/",views.technician_application,name="application"),
+               path("solicitud/estado/",views.application_status,name="application_status"),
+
 ]

@@ -4,8 +4,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-servigo-development-key"
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [ "localhost",
+    "127.0.0.1",
+    ".trycloudflare.com",]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://excel-teacher-findarticles-damaged.trycloudflare.com",
+] 
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
