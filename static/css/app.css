@@ -1,0 +1,17 @@
+/* Ajustes visuales de ServiGo!!.
+   La interfaz principal utiliza Tailwind CSS mediante CDN. */
+
+input, select, textarea {
+    width: 100%;
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    padding: .75rem 1rem;
+    outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #10b981;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(16,185,129,.12);
+}

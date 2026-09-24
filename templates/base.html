@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ServiGo!!{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        servigo: {
+                            50: "#ecfdf5",
+                            100: "#d1fae5",
+                            500: "#10b981",
+                            600: "#059669",
+                            700: "#047857",
+                            900: "#064e3b"
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800">
+    {% include "partials/navbar.html" %}
+
+    {% if messages %}
+    <div class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8">
+        {% for message in messages %}
+        <div class="mb-3 rounded-2xl border border-emerald-100 bg-white px-5 py-4 text-sm shadow-sm">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    {% include "partials/footer.html" %}
+</body>
+</html>

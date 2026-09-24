@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Ingresar | ServiGo!!{% endblock %}
+{% block content %}
+<div class="mx-auto flex min-h-[75vh] max-w-7xl items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/50">
+        <div class="mb-8">
+            <p class="text-sm font-bold uppercase tracking-widest text-emerald-600">ServiGo!!</p>
+            <h1 class="mt-2 text-3xl font-black text-slate-900">Bienvenido de nuevo</h1>
+            <p class="mt-2 text-sm text-slate-500">Ingresa a tu cuenta para continuar.</p>
+        </div>
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+            <div><label class="mb-2 block text-sm font-semibold">Usuario</label><input name="username" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-emerald-500 focus:bg-white"></div>
+            <div><label class="mb-2 block text-sm font-semibold">Contraseña</label><input type="password" name="password" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-emerald-500 focus:bg-white"></div>
+            <button class="w-full rounded-2xl bg-servigo-600 px-5 py-3.5 font-bold text-white hover:bg-servigo-700">Ingresar</button>
+        </form>
+        <p class="mt-6 text-center text-sm text-slate-500">¿No tienes cuenta? <a href="{% url 'accounts:register' %}" class="font-bold text-emerald-600">Regístrate</a></p>
+    </div>
+</div>
+{% endblock %}
