@@ -4,14 +4,15 @@
 
 <div class="mx-auto max-w-7xl px-6 py-12">
 
+    <!-- Encabezado -->
     <div class="mb-10">
-
         <p class="text-sm font-semibold text-indigo-600">
             AppServiGo!!
         </p>
 
         <h1 class="mt-2 text-3xl font-bold text-slate-900">
-            Hola, {{ user.first_name|default:user.username }}
+            Hola,
+            {{ user.first_name|default:user.username }}
         </h1>
 
         <p class="mt-2 text-slate-500">
@@ -23,38 +24,70 @@
                 Usuario
             {% endif %}
         </p>
-
     </div>
 
+
+    <!-- Opciones principales -->
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
-        <a
-            href="{% url 'catalog:list' %}"
-            class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 hover:shadow-md"
-        >
+
+        <!-- Servicios -->
+        <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50">
+                <span class="text-xl">🛠️</span>
+            </div>
+
             <h2 class="text-lg font-bold text-slate-900">
                 Servicios
             </h2>
 
             <p class="mt-2 text-sm text-slate-500">
-                Explora los servicios disponibles.
+                Explora los servicios disponibles en AppServiGo!!
             </p>
-        </a>
 
+            <div class="mt-5">
+                <span class="text-sm font-medium text-slate-400">
+                    Próximamente
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- Mi perfil -->
         <a
             href="{% url 'accounts:profile' %}"
-            class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 hover:shadow-md"
+            class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-md"
         >
+
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50">
+                <span class="text-xl">👤</span>
+            </div>
+
             <h2 class="text-lg font-bold text-slate-900">
                 Mi perfil
             </h2>
 
             <p class="mt-2 text-sm text-slate-500">
-                Actualiza tus datos personales.
+                Actualiza tus datos personales, teléfono, dirección y foto de perfil.
             </p>
+
+            <div class="mt-5">
+                <span class="font-semibold text-indigo-600">
+                    Ver mi perfil →
+                </span>
+            </div>
+
         </a>
 
+
+        <!-- Mis solicitudes -->
         <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50">
+                <span class="text-xl">📋</span>
+            </div>
 
             <h2 class="text-lg font-bold text-slate-900">
                 Mis solicitudes
@@ -63,6 +96,12 @@
             <p class="mt-2 text-sm text-slate-500">
                 Aquí aparecerán tus solicitudes de servicio.
             </p>
+
+            <div class="mt-5">
+                <span class="text-sm font-medium text-slate-400">
+                    Próximamente
+                </span>
+            </div>
 
         </div>
 
