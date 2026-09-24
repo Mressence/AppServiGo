@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="mx-auto max-w-7xl px-6 py-12">
+
+    <div class="mb-10">
+
+        <p class="text-sm font-semibold text-indigo-600">
+            AppServiGo!!
+        </p>
+
+        <h1 class="mt-2 text-3xl font-bold text-slate-900">
+            Hola, {{ user.first_name|default:user.username }}
+        </h1>
+
+        <p class="mt-2 text-slate-500">
+            {% if user.role == "TECNICO" %}
+                Técnico
+            {% elif user.role == "ADMINISTRADOR" %}
+                Administrador
+            {% else %}
+                Usuario
+            {% endif %}
+        </p>
+
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+        <a
+            href="{% url 'catalog:list' %}"
+            class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 hover:shadow-md"
+        >
+            <h2 class="text-lg font-bold text-slate-900">
+                Servicios
+            </h2>
+
+            <p class="mt-2 text-sm text-slate-500">
+                Explora los servicios disponibles.
+            </p>
+        </a>
+
+        <a
+            href="{% url 'accounts:profile' %}"
+            class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 hover:shadow-md"
+        >
+            <h2 class="text-lg font-bold text-slate-900">
+                Mi perfil
+            </h2>
+
+            <p class="mt-2 text-sm text-slate-500">
+                Actualiza tus datos personales.
+            </p>
+        </a>
+
+        <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+
+            <h2 class="text-lg font-bold text-slate-900">
+                Mis solicitudes
+            </h2>
+
+            <p class="mt-2 text-sm text-slate-500">
+                Aquí aparecerán tus solicitudes de servicio.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

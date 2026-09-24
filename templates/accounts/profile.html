@@ -29,7 +29,28 @@
                 >
             </div>
         {% endif %}
+        {% if user.role == "USUARIO" %}
 
+    <div class="mt-8 rounded-3xl bg-slate-50 p-6">
+
+        <h2 class="text-xl font-bold text-slate-900">
+            ¿Quieres ofrecer tus servicios?
+        </h2>
+
+        <p class="mt-2 text-slate-500">
+            Envía tu información profesional para solicitar ser técnico.
+        </p>
+
+        <a
+            href="{% url 'technicians:application' %}"
+            class="mt-5 inline-block rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white"
+        >
+            Solicitar ser técnico
+        </a>
+
+    </div>
+
+{% endif %}
         <form method="post" enctype="multipart/form-data" class="space-y-6">
 
             {% csrf_token %}
