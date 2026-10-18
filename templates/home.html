@@ -1,52 +1,110 @@
 {% extends "base.html" %}
+
 {% block title %}ServiGo!! | Servicios profesionales{% endblock %}
+
 {% block content %}
-<section class="relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-slate-50"></div>
+<section class="relative overflow-hidden bg-white dark:bg-slate-950">
+    <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-slate-100 dark:from-emerald-950/40 dark:via-slate-950 dark:to-slate-900"></div>
+
     <div class="relative mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-28">
+
         <div class="flex flex-col justify-center">
-            <span class="mb-5 w-fit rounded-full border border-emerald-200 bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest text-emerald-700 shadow-sm">
+            <span class="mb-5 w-fit rounded-full border border-emerald-200 bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest text-emerald-700 shadow-sm dark:border-emerald-800 dark:bg-slate-900 dark:text-emerald-300">
                 Servicios · Profesionales · Confianza
             </span>
-            <h1 class="max-w-3xl text-5xl font-black tracking-tight text-slate-950 sm:text-6xl">
+
+            <h1 class="max-w-3xl text-5xl font-black tracking-tight text-slate-950 dark:text-white sm:text-6xl">
                 Conecta con el profesional que necesitas.
             </h1>
-            <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-                ServiGo!! centraliza profesionales y servicios para crear una experiencia sencilla, organizada y confiable.
+
+            <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
+                Encuentra profesionales, compara perfiles y gestiona tus solicitudes desde un solo lugar. Una experiencia sencilla, organizada y confiable.
             </p>
+
             <div class="mt-8 flex flex-wrap gap-3">
-                <a href="{% url 'catalog:catalog' %}" class="rounded-2xl bg-servigo-600 px-6 py-3.5 font-bold text-white shadow-lg shadow-emerald-200 hover:bg-servigo-700">
+                <a href="{% url 'catalog:catalog' %}"
+                   class="rounded-2xl bg-servigo-600 px-6 py-3.5 font-bold text-white shadow-lg shadow-emerald-200 transition hover:bg-servigo-700 dark:shadow-none">
                     Explorar catálogo
                 </a>
-                <a href="{% url 'accounts:register' %}" class="rounded-2xl border border-slate-200 bg-white px-6 py-3.5 font-bold text-slate-700 hover:bg-slate-50">
+
+                <a href="{% url 'accounts:register' %}"
+                   class="rounded-2xl border border-slate-200 bg-white px-6 py-3.5 font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
                     Crear una cuenta
                 </a>
+            </div>
+
+            <div class="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-slate-200 pt-6 dark:border-slate-800">
+                <div>
+                    <p class="text-sm font-black text-emerald-700 dark:text-emerald-400">Profesionales</p>
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Perfiles verificados</p>
+                </div>
+                <div>
+                    <p class="text-sm font-black text-emerald-700 dark:text-emerald-400">Solicitudes</p>
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Seguimiento organizado</p>
+                </div>
+                <div>
+                    <p class="text-sm font-black text-emerald-700 dark:text-emerald-400">Reseñas</p>
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Experiencias reales</p>
+                </div>
             </div>
         </div>
 
         <div class="flex items-center justify-center">
-            <div class="w-full max-w-md rounded-3xl border border-white bg-white p-6 shadow-2xl shadow-slate-200/70">
-                <div class="mb-5 flex items-center justify-between">
+            <div class="w-full max-w-md rounded-3xl border border-white/80 bg-white/90 p-6 shadow-2xl shadow-slate-300/40 backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 dark:shadow-black/20 sm:p-8">
+
+                <div class="mb-6 flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-semibold text-slate-500">Experiencia ServiGo!!</p>
-                        <h2 class="text-xl font-black text-slate-900">Todo organizado</h2>
+                        <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Experiencia ServiGo!!</p>
+                        <h2 class="text-xl font-black text-slate-900 dark:text-white">Todo organizado</h2>
                     </div>
-                    <div class="rounded-2xl bg-emerald-50 p-3 text-emerald-600">✓</div>
+                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-2xl font-black text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">
+                        ✓
+                    </div>
                 </div>
+
                 <div class="space-y-3">
-                    <div class="rounded-2xl bg-slate-50 p-4">
-                        <p class="font-bold text-slate-800">Usuarios</p>
-                        <p class="mt-1 text-sm text-slate-500">Acceso seguro y perfil personalizado.</p>
+                    <div class="flex gap-4 rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/80">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                            <span class="text-lg font-bold">01</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800 dark:text-white">Tu cuenta</p>
+                            <p class="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
+                                Accede a tu perfil y administra tus solicitudes.
+                            </p>
+                        </div>
                     </div>
-                    <div class="rounded-2xl bg-slate-50 p-4">
-                        <p class="font-bold text-slate-800">Técnicos verificados</p>
-                        <p class="mt-1 text-sm text-slate-500">Perfiles sujetos a aprobación administrativa.</p>
+
+                    <div class="flex gap-4 rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/80">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                            <span class="text-lg font-bold">02</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800 dark:text-white">Técnicos verificados</p>
+                            <p class="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
+                                Consulta perfiles profesionales aprobados por administración.
+                            </p>
+                        </div>
                     </div>
-                    <div class="rounded-2xl bg-slate-50 p-4">
-                        <p class="font-bold text-slate-800">Catálogo</p>
-                        <p class="mt-1 text-sm text-slate-500">Categorías y servicios administrables.</p>
+
+                    <div class="flex gap-4 rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/80">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
+                            <span class="text-lg font-bold">03</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800 dark:text-white">Servicios y seguimiento</p>
+                            <p class="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
+                                Explora categorías y consulta el progreso de tus solicitudes.
+                            </p>
+                        </div>
                     </div>
                 </div>
+
+                <a href="{% url 'catalog:catalog' %}"
+                   class="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3.5 font-bold text-white transition hover:bg-slate-700 dark:bg-emerald-600 dark:hover:bg-emerald-500">
+                    Descubrir profesionales
+                    <span aria-hidden="true">→</span>
+                </a>
             </div>
         </div>
     </div>

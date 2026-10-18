@@ -1,16 +1,55 @@
-<nav class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/95 backdrop-blur">
-  <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
-    <a href="{% url 'home' %}" class="shrink-0 text-2xl font-black tracking-tight text-slate-900">Servi<span class="text-servigo-600">Go!!</span></a>
-    <div class="flex flex-wrap items-center justify-end gap-1 sm:gap-2">
-      <a href="{% url 'catalog:catalog' %}" class="rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100">Servicios</a>
-      {% if user.is_authenticated %}
-        <a href="{% url 'service_requests:list' %}" class="rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100">{% if user.role == 'TECNICO' %}Solicitudes disponibles{% else %}Mis solicitudes{% endif %}</a>
-        <a href="{% url 'accounts:profile' %}" class="rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100">Mi perfil</a>
-        <form method="post" action="{% url 'accounts:logout' %}" class="inline">{% csrf_token %}<button class="rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-700">Salir</button></form>
-      {% else %}
-        <a href="{% url 'accounts:login' %}" class="rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100">Ingresar</a>
-        <a href="{% url 'accounts:register' %}" class="rounded-xl bg-servigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-servigo-700">Crear cuenta</a>
-      {% endif %}
+<nav class="sg-navbar sticky top-0 z-50">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+
+        <!-- Logo -->
+        <a href="{% url 'home' %}" class="sg-brand shrink-0" aria-label="ServiGo, inicio">
+            <span>Servi</span><span class="sg-brand-accent">Go!!</span>
+        </a>
+
+        <!-- Navegación -->
+        <div class="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
+
+            <a href="{% url 'catalog:catalog' %}" class="sg-nav-link">
+                Servicios
+            </a>
+
+            {% if user.is_authenticated %}
+
+                <a href="{% url 'service_requests:list' %}" class="sg-nav-link">
+                    {% if user.role == 'TECNICO' %}
+                        Solicitudes disponibles
+                    {% else %}
+                        Mis solicitudes
+                    {% endif %}
+                </a>
+
+                <a href="{% url 'accounts:profile' %}" class="sg-nav-link">
+                    <span class="sg-profile-icon" aria-hidden="true">
+                        {{ user.username|first|upper }}
+                    </span>
+                    <span>Mi perfil</span>
+                </a>
+
+                <form method="post"
+                      action="{% url 'accounts:logout' %}"
+                      class="inline-flex">
+                    {% csrf_token %}
+                    <button type="submit" class="sg-button sg-button-danger sg-button-sm">
+                        Salir
+                    </button>
+                </form>
+
+            {% else %}
+
+                <a href="{% url 'accounts:login' %}" class="sg-nav-link">
+                    Ingresar
+                </a>
+
+                <a href="{% url 'accounts:register' %}" class="sg-button sg-button-primary sg-button-sm">
+                    Crear cuenta
+                </a>
+
+            {% endif %}
+        </div>
     </div>
-  </div>
 </nav>
