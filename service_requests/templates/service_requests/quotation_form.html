@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Enviar cotización | ServiGo!!{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-3xl px-4 py-12"><div class="mb-6"><p class="text-sm font-bold uppercase tracking-widest text-emerald-600">Solicitud #{{ service_request.pk }}</p><h1 class="mt-2 text-3xl font-black">Preparar cotización</h1><p class="mt-2 text-slate-500">{{ service_request.service_type.name }} · {{ service_request.description|truncatechars:160 }}</p></div>
+  <form method="post" class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">{% csrf_token %}{% if form.non_field_errors %}<div class="mb-5 rounded-xl bg-red-50 p-4 text-sm text-red-700">{{ form.non_field_errors }}</div>{% endif %}{% for field in form %}<div class="mb-5"><label class="mb-2 block text-sm font-semibold">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}</div>{% endfor %}<p class="mb-5 text-xs text-slate-500">Incluye el alcance del trabajo y cualquier condición importante. El precio se presenta en balboas (B/.).</p><button class="rounded-xl bg-servigo-600 px-6 py-3 font-bold text-white">Enviar cotización</button><a href="{% url 'service_requests:detail' service_request.pk %}" class="ml-3 font-semibold text-slate-600">Cancelar</a></form>
+</section>
+{% endblock %}

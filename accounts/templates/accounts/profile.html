@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Mi perfil | ServiGo!!{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mb-8"><p class="text-sm font-bold uppercase tracking-widest text-emerald-600">Mi cuenta</p><h1 class="mt-2 text-4xl font-black text-slate-900">Mi perfil</h1><p class="mt-2 text-slate-500">Administra tus datos personales y la seguridad de tu cuenta.</p></div>
+  <div class="grid gap-6 lg:grid-cols-[260px_1fr]">
+    <aside class="rounded-3xl bg-slate-900 p-6 text-white">
+      {% if user.profile_photo %}<img src="{{ user.profile_photo.url }}" alt="Foto de perfil" class="mx-auto mb-4 h-24 w-24 rounded-full object-cover ring-4 ring-white/20">{% else %}<div class="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-white/10 text-3xl font-black">{{ user.first_name|first|default:user.username|first|upper }}</div>{% endif %}
+      <h2 class="text-center text-xl font-bold">{{ user.get_full_name|default:user.username }}</h2>
+      <p class="mt-1 text-center text-sm text-slate-300">{% if user.is_staff or user.role == 'ADMINISTRADOR' %}Administrador{% elif user.role == 'TECNICO' %}Técnico{% else %}Usuario{% endif %}</p>
+      <a href="{% url 'accounts:change_password' %}" class="mt-6 block rounded-xl border border-white/20 px-4 py-3 text-center text-sm font-semibold hover:bg-white/10">Cambiar contraseña</a>
+    </aside>
+    <div class="space-y-6">
+      <form method="post" enctype="multipart/form-data" class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">{% csrf_token %}<h2 class="mb-6 text-xl font-black">Información personal</h2>
+        {% for field in form %}<div class="mb-5"><label class="mb-2 block text-sm font-semibold text-slate-700">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}</div>{% endfor %}
+        <button class="rounded-xl bg-servigo-600 px-5 py-3 font-bold text-white hover:bg-servigo-700">Guardar cambios</button>
+      </form>
+      {% if user.role == 'USUARIO' %}
+        <div class="rounded-3xl border border-emerald-100 bg-emerald-50 p-7"><h2 class="text-xl font-black text-slate-900">¿Quieres ofrecer tus servicios?</h2><p class="mt-2 text-sm leading-6 text-slate-600">Envía tus datos profesionales y los documentos para que el administrador los revise.</p>
+          {% if application %}
+            <p class="mt-4 font-bold">Estado: {{ application.get_status_display }}</p>
+            {% if application.status == 'PENDIENTE' or application.status == 'APROBADO' %}<a href="{% url 'technicians:application_status' %}" class="mt-4 inline-block rounded-xl bg-slate-900 px-5 py-3 font-bold text-white">Ver solicitud</a>{% else %}<a href="{% url 'technicians:application' %}" class="mt-4 inline-block rounded-xl bg-servigo-600 px-5 py-3 font-bold text-white">{% if application.status == 'RECHAZADO' %}Corregir y reenviar{% else %}Completar solicitud{% endif %}</a>{% endif %}
+          {% else %}<a href="{% url 'technicians:application' %}" class="mt-4 inline-block rounded-xl bg-servigo-600 px-5 py-3 font-bold text-white">Solicitar ser técnico</a>{% endif %}
+        </div>
+      {% elif user.role == 'TECNICO' and application %}
+        <div class="rounded-3xl border border-slate-200 bg-white p-7"><h2 class="text-xl font-black">Perfil profesional</h2><p class="mt-2 text-slate-600">Estado de aprobación: <strong>{{ application.get_status_display }}</strong></p><a href="{% url 'technicians:application_status' %}" class="mt-4 inline-block font-bold text-emerald-700">Ver estado y retroalimentación →</a></div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

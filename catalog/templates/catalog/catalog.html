@@ -1,37 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Catálogo | ServiGo!!{% endblock %}
+{% block title %}Servicios | ServiGo!!{% endblock %}
 {% block content %}
-<div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-    <div class="max-w-3xl">
-        <p class="text-sm font-bold uppercase tracking-widest text-emerald-600">Catálogo ServiGo!!</p>
-        <h1 class="mt-2 text-4xl font-black text-slate-900 sm:text-5xl">Servicios organizados por categoría.</h1>
-        <p class="mt-4 text-lg text-slate-500">La administración puede mantener actualizado este catálogo desde el panel administrativo.</p>
-    </div>
-
-    <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {% for category in categories %}
-        <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-black text-slate-900">{{ category.name }}</h2>
-                <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{{ category.services.count }} servicios</span>
-            </div>
-            <p class="mt-3 text-sm leading-6 text-slate-500">{{ category.description|default:"Servicios profesionales disponibles en esta categoría." }}</p>
-            <div class="mt-5 space-y-2">
-                {% for service in category.services.all %}
-                    {% if service.active %}
-                    <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">{{ service.name }}</div>
-                    {% endif %}
-                {% empty %}
-                    <p class="text-sm text-slate-400">Aún no hay servicios publicados.</p>
-                {% endfor %}
-            </div>
-        </article>
-        {% empty %}
-        <div class="md:col-span-2 lg:col-span-3 rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center">
-            <h2 class="text-xl font-black text-slate-800">Catálogo en preparación</h2>
-            <p class="mt-2 text-slate-500">Crea categorías y servicios desde el panel de administración.</p>
-        </div>
-        {% endfor %}
-    </div>
-</div>
+<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+  <div class="max-w-3xl"><p class="text-sm font-bold uppercase tracking-widest text-emerald-600">Catálogo ServiGo!!</p><h1 class="mt-2 text-4xl font-black text-slate-900 sm:text-5xl">Encuentra el servicio que necesitas.</h1><p class="mt-4 text-lg text-slate-500">Busca por servicio o categoría y envía tu solicitud con los detalles del trabajo.</p></div>
+  <form method="get" class="mt-8 grid gap-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm md:grid-cols-[1fr_260px_auto_auto]">
+    <input type="search" name="q" value="{{ query }}" placeholder="Ej. plomería, electricidad, reparación..." class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-emerald-500 focus:outline-none">
+    <select name="categoria" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3"><option value="">Todas las categorías</option>{% for category in active_categories %}<option value="{{ category.pk }}" {% if selected_category == category.pk|stringformat:'s' %}selected{% endif %}>{{ category.name }}</option>{% endfor %}</select>
+    <button class="rounded-xl bg-servigo-600 px-5 py-3 font-bold text-white hover:bg-servigo-700">Buscar</button><a href="{% url 'catalog:catalog' %}" class="rounded-xl border border-slate-200 px-5 py-3 text-center font-bold text-slate-600 hover:bg-slate-50">Limpiar</a>
+  </form>
+  <div class="mt-10"><div class="mb-5 flex items-center justify-between"><h2 class="text-2xl font-black">Servicios disponibles</h2><span class="text-sm text-slate-500">{{ services|length }} resultado(s)</span></div>
+    <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">{% for service in services %}<article class="flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"><p class="text-xs font-bold uppercase tracking-widest text-emerald-700">{{ service.category.name }}</p><h3 class="mt-2 text-xl font-black text-slate-900">{{ service.name }}</h3><p class="mt-3 flex-1 text-sm leading-6 text-slate-500">{{ service.description|default:"Servicio profesional disponible para solicitar." }}</p>{% if user.is_authenticated %}<a href="{% url 'service_requests:create' %}?service={{ service.pk }}" class="mt-6 rounded-xl bg-servigo-600 px-4 py-3 text-center font-bold text-white hover:bg-servigo-700">Solicitar este servicio</a>{% else %}<a href="{% url 'accounts:login' %}" class="mt-6 rounded-xl border border-slate-200 px-4 py-3 text-center font-bold text-slate-700 hover:bg-slate-50">Inicia sesión para solicitar</a>{% endif %}</article>{% empty %}<div class="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center md:col-span-2 lg:col-span-3"><h2 class="text-xl font-black">No encontramos servicios</h2><p class="mt-2 text-slate-500">Prueba con otra palabra o selecciona todas las categorías.</p></div>{% endfor %}</div>
+  </div>
+</section>
 {% endblock %}
