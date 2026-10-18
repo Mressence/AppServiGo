@@ -16,7 +16,7 @@
         <button class="rounded-xl bg-servigo-600 px-5 py-3 font-bold text-white hover:bg-servigo-700">Guardar cambios</button>
       </form>
       {% if user.role == 'USUARIO' %}
-        <div class="rounded-3xl border border-emerald-100 bg-emerald-50 p-7"><h2 class="text-xl font-black text-slate-900">¿Quieres ofrecer tus servicios?</h2><p class="mt-2 text-sm leading-6 text-slate-600">Envía tus datos profesionales y los documentos para que el administrador los revise.</p>
+        <div class="rounded-3xl border border-emerald-100 bg-emerald-50 p-7"><h2 class="text-xl font-black text-slate-900">¿Quieres ofrecer tus servicios?</h2><p class="mt-2 text-sm leading-6 text-slate-600">Abre el formulario para indicar tu profesión y adjuntar tu identificación y certificación. El administrador revisará los documentos y asignará tu categoría profesional.</p>
           {% if application %}
             <p class="mt-4 font-bold">Estado: {{ application.get_status_display }}</p>
             {% if application.status == 'PENDIENTE' or application.status == 'APROBADO' %}<a href="{% url 'technicians:application_status' %}" class="mt-4 inline-block rounded-xl bg-slate-900 px-5 py-3 font-bold text-white">Ver solicitud</a>{% else %}<a href="{% url 'technicians:application' %}" class="mt-4 inline-block rounded-xl bg-servigo-600 px-5 py-3 font-bold text-white">{% if application.status == 'RECHAZADO' %}Corregir y reenviar{% else %}Completar solicitud{% endif %}</a>{% endif %}

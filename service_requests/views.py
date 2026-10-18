@@ -23,9 +23,10 @@ def request_list(request):
     if request.user.is_staff or request.user.role == User.Role.ADMINISTRADOR:
         requests = ServiceRequest.objects.select_related("requester", "service_type", "assigned_technician")
     elif _is_approved_technician(request.user):
+        technician_category_id = request.user.technician_profile.category_id
         requests = ServiceRequest.objects.filter(
             Q(requester=request.user) | Q(assigned_technician=request.user) |
-            Q(status__in=[ServiceRequest.Status.PENDIENTE, ServiceRequest.Status.COTIZADA])
+            Q(status__in=[ServiceRequest.Status.PENDIENTE, ServiceRequest.Status.COTIZADA], service_type__category_id=technician_category_id)
         ).select_related("requester", "service_type", "assigned_technician").distinct()
     else:
         requests = ServiceRequest.objects.filter(requester=request.user).select_related("service_type", "assigned_technician")
@@ -67,7 +68,9 @@ def request_detail(request, pk):
     is_assigned = service_request.assigned_technician_id == request.user.pk
     is_admin = request.user.is_staff or request.user.role == User.Role.ADMINISTRADOR
     is_tech = _is_approved_technician(request.user)
-    if not (is_owner or is_assigned or is_admin or (is_tech and service_request.status in (ServiceRequest.Status.PENDIENTE, ServiceRequest.Status.COTIZADA))):
+    technician_profile = getattr(request.user, "technician_profile", None)
+    category_matches = bool(technician_profile and technician_profile.category_id == service_request.service_type.category_id)
+    if not (is_owner or is_assigned or is_admin or (is_tech and category_matches and service_request.status in (ServiceRequest.Status.PENDIENTE, ServiceRequest.Status.COTIZADA))):
         raise PermissionDenied("No tienes permiso para ver esta solicitud.")
     if is_owner or is_admin or is_assigned:
         quotations = service_request.quotations.all()
@@ -125,6 +128,9 @@ def quotation_create(request, pk):
         raise PermissionDenied("Solo los técnicos aprobados pueden enviar cotizaciones.")
     if service_request.requester_id == request.user.pk:
         raise PermissionDenied("No puedes cotizar tu propia solicitud.")
+    technician_profile = getattr(request.user, "technician_profile", None)
+    if not technician_profile or technician_profile.category_id != service_request.service_type.category_id:
+        raise PermissionDenied("Solo puedes cotizar solicitudes de tu categoría profesional asignada.")
     if service_request.status not in (ServiceRequest.Status.PENDIENTE, ServiceRequest.Status.COTIZADA):
         messages.error(request, "Esta solicitud ya no acepta cotizaciones.")
         return redirect("service_requests:detail", pk=pk)

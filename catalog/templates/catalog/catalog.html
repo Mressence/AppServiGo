@@ -1,15 +1,202 @@
+```html
 {% extends "base.html" %}
 {% block title %}Servicios | ServiGo!!{% endblock %}
+
 {% block content %}
 <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-  <div class="max-w-3xl"><p class="text-sm font-bold uppercase tracking-widest text-emerald-600">Catálogo ServiGo!!</p><h1 class="mt-2 text-4xl font-black text-slate-900 sm:text-5xl">Encuentra el servicio que necesitas.</h1><p class="mt-4 text-lg text-slate-500">Busca por servicio o categoría y envía tu solicitud con los detalles del trabajo.</p></div>
-  <form method="get" class="mt-8 grid gap-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm md:grid-cols-[1fr_260px_auto_auto]">
-    <input type="search" name="q" value="{{ query }}" placeholder="Ej. plomería, electricidad, reparación..." class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-emerald-500 focus:outline-none">
-    <select name="categoria" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3"><option value="">Todas las categorías</option>{% for category in active_categories %}<option value="{{ category.pk }}" {% if selected_category == category.pk|stringformat:'s' %}selected{% endif %}>{{ category.name }}</option>{% endfor %}</select>
-    <button class="rounded-xl bg-servigo-600 px-5 py-3 font-bold text-white hover:bg-servigo-700">Buscar</button><a href="{% url 'catalog:catalog' %}" class="rounded-xl border border-slate-200 px-5 py-3 text-center font-bold text-slate-600 hover:bg-slate-50">Limpiar</a>
-  </form>
-  <div class="mt-10"><div class="mb-5 flex items-center justify-between"><h2 class="text-2xl font-black">Servicios disponibles</h2><span class="text-sm text-slate-500">{{ services|length }} resultado(s)</span></div>
-    <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">{% for service in services %}<article class="flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"><p class="text-xs font-bold uppercase tracking-widest text-emerald-700">{{ service.category.name }}</p><h3 class="mt-2 text-xl font-black text-slate-900">{{ service.name }}</h3><p class="mt-3 flex-1 text-sm leading-6 text-slate-500">{{ service.description|default:"Servicio profesional disponible para solicitar." }}</p>{% if user.is_authenticated %}<a href="{% url 'service_requests:create' %}?service={{ service.pk }}" class="mt-6 rounded-xl bg-servigo-600 px-4 py-3 text-center font-bold text-white hover:bg-servigo-700">Solicitar este servicio</a>{% else %}<a href="{% url 'accounts:login' %}" class="mt-6 rounded-xl border border-slate-200 px-4 py-3 text-center font-bold text-slate-700 hover:bg-slate-50">Inicia sesión para solicitar</a>{% endif %}</article>{% empty %}<div class="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center md:col-span-2 lg:col-span-3"><h2 class="text-xl font-black">No encontramos servicios</h2><p class="mt-2 text-slate-500">Prueba con otra palabra o selecciona todas las categorías.</p></div>{% endfor %}</div>
+
+  <!-- Encabezado -->
+  <div class="max-w-3xl">
+    <p class="text-sm font-bold uppercase tracking-widest text-emerald-600">
+      Catálogo ServiGo!!
+    </p>
+    <h1 class="mt-2 text-4xl font-black text-slate-900 sm:text-5xl">
+      Encuentra el servicio que necesitas.
+    </h1>
+    <p class="mt-4 text-lg text-slate-500">
+      Busca por servicio, categoría o especialidad y encuentra técnicos profesionales.
+    </p>
   </div>
+
+  <!-- Buscador y filtros -->
+  <form method="get"
+        class="mt-8 grid gap-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm md:grid-cols-[1fr_260px_auto_auto]">
+
+    <input
+      type="search"
+      name="q"
+      value="{{ query }}"
+      placeholder="Ej. plomería, electricidad, reparación..."
+      class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-emerald-500 focus:outline-none">
+
+    <select
+      name="categoria"
+      class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3">
+
+      <option value="">Todas las categorías</option>
+
+      {% for category in active_categories %}
+        <option value="{{ category.pk }}"
+          {% if selected_category == category.pk|stringformat:'s' %}selected{% endif %}>
+          {{ category.name }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <button type="submit"
+            class="rounded-xl bg-servigo-600 px-5 py-3 font-bold text-white hover:bg-servigo-700">
+      Buscar
+    </button>
+
+    <a href="{% url 'catalog:catalog' %}"
+       class="rounded-xl border border-slate-200 px-5 py-3 text-center font-bold text-slate-600 hover:bg-slate-50">
+      Limpiar
+    </a>
+  </form>
+
+  <!-- Servicios disponibles -->
+  <div class="mt-10">
+
+    <div class="mb-5 flex flex-wrap items-center justify-between gap-2">
+      <h2 class="text-2xl font-black text-slate-900">
+        Servicios disponibles
+      </h2>
+      <span class="text-sm text-slate-500">
+        {{ services|length }} resultado(s)
+      </span>
+    </div>
+
+    <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+
+      {% for service in services %}
+        <article class="flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+
+          <p class="text-xs font-bold uppercase tracking-widest text-emerald-700">
+            {{ service.category.name }}
+          </p>
+
+          <h3 class="mt-2 text-xl font-black text-slate-900">
+            {{ service.name }}
+          </h3>
+
+          <p class="mt-3 flex-1 text-sm leading-6 text-slate-500">
+            {{ service.description|default:"Servicio profesional disponible para solicitar." }}
+          </p>
+
+          {% if user.is_authenticated %}
+            <a href="{% url 'service_requests:create' %}?service={{ service.pk }}"
+               class="mt-6 rounded-xl bg-servigo-600 px-4 py-3 text-center font-bold text-white hover:bg-servigo-700">
+              Solicitar este servicio
+            </a>
+          {% else %}
+            <a href="{% url 'accounts:login' %}"
+               class="mt-6 rounded-xl border border-slate-200 px-4 py-3 text-center font-bold text-slate-700 hover:bg-slate-50">
+              Inicia sesión para solicitar
+            </a>
+          {% endif %}
+
+        </article>
+      {% empty %}
+        <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center md:col-span-2 lg:col-span-3">
+          <h3 class="text-xl font-black text-slate-900">
+            No encontramos servicios
+          </h3>
+          <p class="mt-2 text-slate-500">
+            Prueba con otra palabra o selecciona todas las categorías.
+          </p>
+        </div>
+      {% endfor %}
+
+    </div>
+  </div>
+
+  <!-- Técnicos disponibles -->
+  <div class="mt-16">
+
+    <div class="mb-5 flex flex-wrap items-center justify-between gap-2">
+      <div>
+        <p class="text-sm font-bold uppercase tracking-widest text-emerald-600">
+          Profesionales verificados
+        </p>
+        <h2 class="mt-1 text-2xl font-black text-slate-900">
+          Técnicos disponibles
+        </h2>
+      </div>
+
+      <span class="text-sm text-slate-500">
+        {{ technicians|length }} técnico(s)
+      </span>
+    </div>
+
+    <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+
+      {% for technician in technicians %}
+        <article class="flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-emerald-700">
+                {% if technician.category %}
+                  {{ technician.category.name }}
+                {% else %}
+                  Técnico profesional
+                {% endif %}
+              </p>
+
+              <h3 class="mt-2 text-xl font-black text-slate-900">
+                {{ technician.user.get_full_name|default:technician.user.username }}
+              </h3>
+            </div>
+
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   width="25" height="25" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="1.8"
+                   stroke-linecap="round" stroke-linejoin="round"
+                   aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+          </div>
+
+          <p class="mt-3 font-semibold text-slate-700">
+            {{ technician.professional_title }}
+          </p>
+
+          <p class="mt-3 flex-1 text-sm leading-6 text-slate-500">
+            {{ technician.description|default:"Este profesional todavía no ha agregado una descripción."|truncatewords:28 }}
+          </p>
+
+          <div class="mt-5 rounded-xl bg-slate-50 p-3">
+            <p class="text-sm text-slate-600">
+              <span class="font-bold text-slate-900">Experiencia:</span>
+              {{ technician.experience }}
+              {% if technician.experience == 1 %}año{% else %}años{% endif %}
+            </p>
+          </div>
+
+          <a href="{% url 'technicians:public_profile' technician.pk %}"
+             class="mt-5 rounded-xl border border-emerald-600 px-4 py-3 text-center font-bold text-emerald-700 transition hover:bg-emerald-50">
+            Ver perfil profesional
+          </a>
+
+        </article>
+
+      {% empty %}
+        <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center md:col-span-2 lg:col-span-3">
+          <h3 class="text-xl font-black text-slate-900">
+            Aún no hay técnicos disponibles
+          </h3>
+          <p class="mt-2 text-slate-500">
+            Cuando se aprueben solicitudes de técnicos, sus perfiles aparecerán aquí.
+          </p>
+        </div>
+      {% endfor %}
+
+    </div>
+  </div>
+
 </section>
 {% endblock %}
+```

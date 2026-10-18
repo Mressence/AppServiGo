@@ -12,6 +12,8 @@ def create_quotation(*, request_obj, technician, amount, details, estimated_days
         raise PermissionDenied("Solo los técnicos aprobados pueden cotizar.")
     if request_obj.requester_id == technician.pk:
         raise PermissionDenied("No puedes cotizar tu propia solicitud.")
+    if not profile.category_id or profile.category_id != request_obj.service_type.category_id:
+        raise PermissionDenied("Solo puedes cotizar solicitudes de tu categoría profesional asignada.")
     if request_obj.status not in (ServiceRequest.Status.PENDIENTE, ServiceRequest.Status.COTIZADA):
         raise ValidationError("Esta solicitud ya no acepta cotizaciones.")
     quotation, created = Quotation.objects.update_or_create(

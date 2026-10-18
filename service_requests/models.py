@@ -3,6 +3,8 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from catalog.models import ServiceType
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 ALLOWED_ATTACHMENT_EXTENSIONS = {".pdf", ".jpg", ".jpeg", ".png", ".webp"}
 MAX_ATTACHMENT_SIZE = 10 * 1024 * 1024
@@ -84,3 +86,40 @@ class Quotation(models.Model):
 
     def __str__(self):
         return f"Cotización #{self.pk} — {self.amount}"
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+
+class TechnicianReview(models.Model):
+    service_request = models.OneToOneField(
+        "service_requests.ServiceRequest",
+        on_delete=models.CASCADE,
+        related_name="technician_review",
+    )
+    technician = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.PROTECT,
+        related_name="received_technician_reviews",
+    )
+    reviewer = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.PROTECT,
+        related_name="written_technician_reviews",
+    )
+    rating = models.PositiveSmallIntegerField(
+        "Calificación",
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+    )
+    comment = models.TextField("Comentario", blank=True)
+    created_at = models.DateTimeField("Fecha de publicación", auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(rating__gte=1, rating__lte=5),
+                name="technician_review_rating_1_5",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.technician} — {self.rating}/5"
