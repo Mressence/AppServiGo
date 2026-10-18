@@ -1,14 +1,24 @@
-__pycache__/
-*.py[cod]
 
+# Entornos de Python
+.venv/
 venv/
 env/
-.venv/
-django_env/
 
-.env
-
-db.sqlite3
+# Archivos temporales
+__pycache__/
+*.py[cod]
 *.log
 
+# Configuración privada
+.env
+.env.*
+
+# Base de datos local
+db.sqlite3
+
+# Archivos subidos por usuarios
+media/
+
+# Archivos del editor
 .vscode/
+.idea/
