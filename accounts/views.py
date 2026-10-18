@@ -1,3 +1,4 @@
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -11,55 +12,125 @@ from .forms import RegisterForm, ProfileForm, StyledPasswordChangeForm
 from .models import User
 
 
+def get_login_destination(user):
+    """
+    Decide a qué pantalla dirigir al usuario después de entrar.
+    """
+
+    # El administrador puede acceder a la página principal
+    # y entrar a administración cuando lo necesite.
+    if user.is_superuser or user.is_staff:
+        return "home"
+
+    # Los técnicos deben pasar por revisión antes de trabajar.
+    if user.role == User.Role.TECNICO:
+        profile = getattr(user, "technician_profile", None)
+
+        if profile and profile.status == TechnicianProfile.Status.APROBADO:
+            return "service_requests:list"
+
+        # Los técnicos pendientes o con correcciones
+        # pueden consultar el estado de su perfil.
+        return "accounts:profile"
+
+    # Los clientes entran a Explorar.
+    # Reutilizamos el dashboard como página de descubrimiento.
+    return "accounts:dashboard"
+
+
 def register(request):
     if request.user.is_authenticated:
-        return redirect("accounts:dashboard")
+        return redirect(get_login_destination(request.user))
+
     if request.method == "POST":
         form = RegisterForm(request.POST)
+
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "Tu cuenta se creó correctamente.")
-            return redirect("accounts:dashboard")
+
+            messages.success(
+                request,
+                "Tu cuenta se creó correctamente."
+            )
+
+            return redirect(get_login_destination(user))
     else:
         form = RegisterForm()
-    return render(request, "accounts/register.html", {"form": form})
+
+    return render(
+        request,
+        "accounts/register.html",
+        {"form": form}
+    )
 
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect("accounts:dashboard")
+        return redirect(get_login_destination(request.user))
+
     if request.method == "POST":
         username = request.POST.get("username", "").strip()
         password = request.POST.get("password", "")
-        user = authenticate(request, username=username, password=password)
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
         if user is not None:
             login(request, user)
-            return redirect("accounts:dashboard")
-        messages.error(request, "Usuario o contraseña incorrectos.")
+            return redirect(get_login_destination(user))
+
+        messages.error(
+            request,
+            "Usuario o contraseña incorrectos."
+        )
+
     return render(request, "accounts/login.html")
 
 
 def logout_view(request):
-    if request.method == "POST":
-        logout(request)
-    else:
-        logout(request)
+    logout(request)
     return redirect("home")
 
 
 @login_required
 def profile(request):
     if request.method == "POST":
-        form = ProfileForm(request.POST, request.FILES, instance=request.user)
+        form = ProfileForm(
+            request.POST,
+            request.FILES,
+            instance=request.user
+        )
+
         if form.is_valid():
             form.save()
-            messages.success(request, "Tu perfil se actualizó correctamente.")
+
+            messages.success(
+                request,
+                "Tu perfil se actualizó correctamente."
+            )
+
             return redirect("accounts:profile")
     else:
         form = ProfileForm(instance=request.user)
-    application = getattr(request.user, "technician_profile", None)
-    return render(request, "accounts/profile.html", {"form": form, "application": application})
+
+    application = getattr(
+        request.user,
+        "technician_profile",
+        None
+    )
+
+    return render(
+        request,
+        "accounts/profile.html",
+        {
+            "form": form,
+            "application": application
+        }
+    )
 
 
 class ServiGoPasswordChangeView(PasswordChangeView):
@@ -68,21 +139,83 @@ class ServiGoPasswordChangeView(PasswordChangeView):
     success_url = reverse_lazy("accounts:profile")
 
     def form_valid(self, form):
-        messages.success(self.request, "Tu contraseña se cambió correctamente.")
+        messages.success(
+            self.request,
+            "Tu contraseña se cambió correctamente."
+        )
+
         return super().form_valid(form)
 
 
 @login_required
 def dashboard(request):
+    """
+    Página Explorar para clientes.
+    Conservamos esta URL para no romper enlaces existentes.
+    """
+
     context = {
-        "my_requests": ServiceRequest.objects.filter(requester=request.user).select_related("service_type", "assigned_technician").order_by("-created_at")[:5],
-        "my_requests_count": ServiceRequest.objects.filter(requester=request.user).count(),
+        "my_requests": ServiceRequest.objects.filter(
+            requester=request.user
+        ).select_related(
+            "service_type",
+            "assigned_technician"
+        ).order_by("-created_at")[:5],
+
+        "my_requests_count": ServiceRequest.objects.filter(
+            requester=request.user
+        ).count(),
     }
+
     if request.user.role == User.Role.TECNICO:
-        context["technician"] = getattr(request.user, "technician_profile", None)
-        context["available_requests_count"] = ServiceRequest.objects.filter(status__in=[ServiceRequest.Status.PENDIENTE, ServiceRequest.Status.COTIZADA]).exclude(requester=request.user).count()
-        context["assigned_requests"] = ServiceRequest.objects.filter(assigned_technician=request.user).exclude(status=ServiceRequest.Status.COMPLETADA).order_by("-updated_at")[:5]
-    if request.user.role == User.Role.ADMINISTRADOR or request.user.is_staff:
-        context["pending_technicians_count"] = TechnicianProfile.objects.filter(status=TechnicianProfile.Status.PENDIENTE).count()
-        context["open_requests_count"] = ServiceRequest.objects.filter(status__in=[ServiceRequest.Status.PENDIENTE, ServiceRequest.Status.COTIZADA]).count()
-    return render(request, "accounts/dashboard.html", context)
+        context["technician"] = getattr(
+            request.user,
+            "technician_profile",
+            None
+        )
+
+        context["available_requests_count"] = (
+            ServiceRequest.objects.filter(
+                status__in=[
+                    ServiceRequest.Status.PENDIENTE,
+                    ServiceRequest.Status.COTIZADA
+                ]
+            )
+            .exclude(requester=request.user)
+            .count()
+        )
+
+        context["assigned_requests"] = (
+            ServiceRequest.objects.filter(
+                assigned_technician=request.user
+            )
+            .exclude(
+                status=ServiceRequest.Status.COMPLETADA
+            )
+            .order_by("-updated_at")[:5]
+        )
+
+    if (
+        request.user.role == User.Role.ADMINISTRADOR
+        or request.user.is_staff
+    ):
+        context["pending_technicians_count"] = (
+            TechnicianProfile.objects.filter(
+                status=TechnicianProfile.Status.PENDIENTE
+            ).count()
+        )
+
+        context["open_requests_count"] = (
+            ServiceRequest.objects.filter(
+                status__in=[
+                    ServiceRequest.Status.PENDIENTE,
+                    ServiceRequest.Status.COTIZADA
+                ]
+            ).count()
+        )
+
+    return render(
+        request,
+        "accounts/dashboard.html",
+        context
+    )

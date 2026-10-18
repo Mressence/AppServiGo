@@ -10,13 +10,19 @@
 
 <title>{% block title %}ServiGo!!{% endblock %}</title>
 
+
 <script>
     (() => {
         try {
             const saved = localStorage.getItem("servigo-theme");
-            const theme = saved === "dark" || saved === "light"
-                ? saved
-                : "light";
+            const valid = ["dark", "light", "system"].includes(saved);
+            const preference = valid ? saved : "system";
+
+            const theme = preference === "system"
+                ? (window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark"
+                    : "light")
+                : preference;
 
             document.documentElement.dataset.theme = theme;
         } catch (error) {
@@ -26,6 +32,7 @@
 
     tailwind = window.tailwind || {};
 </script>
+
 
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -238,18 +245,6 @@
 
 {% include "partials/navbar.html" %}
 
-<div class="mx-auto flex max-w-7xl justify-end px-4 pt-4 sm:px-6 lg:px-8">
-    <button
-        type="button"
-        id="theme-toggle"
-        class="theme-toggle"
-        aria-label="Cambiar apariencia"
-        aria-pressed="false"
-    >
-        <span id="theme-icon" aria-hidden="true">🌙</span>
-        <span id="theme-label">Modo oscuro</span>
-    </button>
-</div>
 
 {% if messages %}
     <div class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8">
@@ -267,51 +262,89 @@
 
 {% include "partials/footer.html" %}
 
+
 <script>
     (() => {
         const root = document.documentElement;
-        const button = document.getElementById("theme-toggle");
-        const label = document.getElementById("theme-label");
-        const icon = document.getElementById("theme-icon");
+        const preferenceSelect = document.getElementById("theme-preference");
 
-        if (!button || !label || !icon) return;
+        function resolveTheme(preference) {
+            if (preference === "system") {
+                return window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark"
+                    : "light";
+            }
 
-        function applyTheme(theme, save = true) {
+            return preference;
+        }
+
+        function applyTheme(preference, save = true) {
+            const theme = resolveTheme(preference);
+
             root.dataset.theme = theme;
 
             if (save) {
                 try {
-                    localStorage.setItem("servigo-theme", theme);
+                    localStorage.setItem("servigo-theme", preference);
                 } catch (error) {
-                    // La interfaz sigue funcionando si el almacenamiento está bloqueado.
+                    // El tema seguirá funcionando durante esta visita.
                 }
             }
 
-            const dark = theme === "dark";
+            const themeColor = document.querySelector(
+                'meta[name="theme-color"]'
+            );
 
-            label.textContent = dark ? "Modo claro" : "Modo oscuro";
-            icon.textContent = dark ? "☀️" : "🌙";
-            button.setAttribute("aria-pressed", String(dark));
-
-            const themeColor = document.querySelector('meta[name="theme-color"]');
             if (themeColor) {
                 themeColor.setAttribute(
                     "content",
-                    dark ? "#111916" : "#123D35"
+                    theme === "dark" ? "#111916" : "#123D35"
                 );
             }
         }
 
-        applyTheme(root.dataset.theme || "light", false);
+        let preference = "system";
 
-        button.addEventListener("click", () => {
-            const nextTheme =
-                root.dataset.theme === "dark" ? "light" : "dark";
+        try {
+            const saved = localStorage.getItem("servigo-theme");
 
-            applyTheme(nextTheme);
+            if (["light", "dark", "system"].includes(saved)) {
+                preference = saved;
+            }
+        } catch (error) {
+            // Se utiliza la apariencia predeterminada.
+        }
+
+        applyTheme(preference, false);
+
+        if (preferenceSelect) {
+            preferenceSelect.value = preference;
+
+            preferenceSelect.addEventListener("change", () => {
+                applyTheme(preferenceSelect.value);
+            });
+        }
+
+        // Actualiza el tema si el usuario eligió seguir la apariencia del dispositivo.
+        const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+        media.addEventListener("change", () => {
+            let currentPreference = "system";
+
+            try {
+                currentPreference =
+                    localStorage.getItem("servigo-theme") || "system";
+            } catch (error) {
+                // Se mantiene la apariencia predeterminada.
+            }
+
+            if (currentPreference === "system") {
+                applyTheme("system", false);
+            }
         });
     })();
 </script>
+
 
 </body>
 </html>

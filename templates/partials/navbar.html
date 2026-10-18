@@ -1,38 +1,46 @@
+
 <nav class="sg-navbar sticky top-0 z-50">
     <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
 
-        <!-- Logo -->
         <a href="{% url 'home' %}" class="sg-brand shrink-0" aria-label="ServiGo, inicio">
             <span>Servi</span><span class="sg-brand-accent">Go!!</span>
         </a>
 
-        <!-- Navegación -->
         <div class="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
-
-            <a href="{% url 'catalog:catalog' %}" class="sg-nav-link">
-                Servicios
-            </a>
+         
 
             {% if user.is_authenticated %}
 
-                <a href="{% url 'service_requests:list' %}" class="sg-nav-link">
-                    {% if user.role == 'TECNICO' %}
-                        Solicitudes disponibles
-                    {% else %}
-                        Mis solicitudes
-                    {% endif %}
+                <a href="{% url 'accounts:dashboard' %}" class="sg-nav-link">
+    Explorar
+</a>
+
+                <a href="{% url 'catalog:catalog' %}" class="sg-nav-link">
+                    Servicios
                 </a>
 
+                {% if user.role == 'TECNICO' %}
+                    <a href="{% url 'service_requests:list' %}" class="sg-nav-link">
+                        Solicitudes profesionales
+                    </a>
+                {% elif user.role != 'ADMINISTRADOR' and not user.is_staff %}
+                    <a href="{% url 'service_requests:list' %}" class="sg-nav-link">
+                        Mis solicitudes
+                    </a>
+                {% endif %}
+
                 <a href="{% url 'accounts:profile' %}" class="sg-nav-link">
-                    <span class="sg-profile-icon" aria-hidden="true">
-                        {{ user.username|first|upper }}
-                    </span>
+                    <span class="sg-profile-icon" aria-hidden="true">{{ user.username|first|upper }}</span>
                     <span>Mi perfil</span>
                 </a>
 
-                <form method="post"
-                      action="{% url 'accounts:logout' %}"
-                      class="inline-flex">
+                {% if user.is_staff or user.role == 'ADMINISTRADOR' %}
+                    <a href="{% url 'admin:index' %}" class="sg-nav-link">
+                        Administración
+                    </a>
+                {% endif %}
+
+                <form method="post" action="{% url 'accounts:logout' %}" class="inline-flex">
                     {% csrf_token %}
                     <button type="submit" class="sg-button sg-button-danger sg-button-sm">
                         Salir
@@ -40,6 +48,10 @@
                 </form>
 
             {% else %}
+
+                <a href="{% url 'catalog:catalog' %}" class="sg-nav-link">
+                    Servicios
+                </a>
 
                 <a href="{% url 'accounts:login' %}" class="sg-nav-link">
                     Ingresar
@@ -50,6 +62,7 @@
                 </a>
 
             {% endif %}
+
         </div>
     </div>
 </nav>
