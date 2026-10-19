@@ -18,7 +18,7 @@ def profile(request):
 @login_required
 def application(request):
     if request.user.role == User.Role.ADMINISTRADOR or request.user.is_staff:
-        return redirect("accounts:dashboard")
+        return redirect("home")
     profile, _ = TechnicianProfile.objects.get_or_create(user=request.user, defaults={"professional_title": "Pendiente de completar"})
     if profile.status in (TechnicianProfile.Status.PENDIENTE, TechnicianProfile.Status.APROBADO):
         return redirect("technicians:application_status")

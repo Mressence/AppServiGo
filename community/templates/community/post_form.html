@@ -1,0 +1,72 @@
+
+{% extends "base.html" %}
+
+{% block title %}Nueva publicación | ServiGo!!{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
+    <a href="{% url 'community:list' %}" class="text-sm font-bold text-emerald-700 dark:text-emerald-400">
+        ← Volver a la comunidad
+    </a>
+
+    <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900 sm:p-8">
+        <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">
+            Crear publicación
+        </h1>
+        <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            Comparte una pregunta o un consejo útil. Tu publicación será revisada antes de aparecer públicamente.
+        </p>
+
+        <form method="post" class="mt-7 space-y-5">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="rounded-xl bg-red-50 p-3 text-sm text-red-800">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-800 dark:text-slate-200">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="mt-1 text-xs text-slate-500">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="flex flex-wrap gap-3 pt-2">
+                <button type="submit" class="rounded-xl bg-emerald-700 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-800">
+                    Enviar a revisión
+                </button>
+                <a href="{% url 'community:list' %}" class="rounded-xl border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700 dark:border-slate-700 dark:text-slate-200">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</section>
+
+<style>
+.community-input {
+    display: block;
+    width: 100%;
+    margin-top: .25rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--sg-border, #dce6de);
+    border-radius: .75rem;
+    background: var(--sg-surface, #fff);
+    color: var(--sg-text, #24332b);
+}
+.community-input:focus {
+    outline: 2px solid var(--sg-primary, #176b50);
+    outline-offset: 2px;
+}
+</style>
+{% endblock %}

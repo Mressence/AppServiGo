@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     "technicians",
     "catalog",
     "service_requests",
+    "community",
 ]
 
 MIDDLEWARE = [
@@ -71,5 +72,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
 
 LOGIN_URL = "accounts:login"
-LOGIN_REDIRECT_URL = "accounts:dashboard"
+LOGIN_REDIRECT_URL = "catalog:catalog"
 LOGOUT_REDIRECT_URL = "home"

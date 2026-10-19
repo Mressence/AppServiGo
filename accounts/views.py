@@ -1,4 +1,3 @@
-
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -7,7 +6,6 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect, render
 
 from technicians.models import TechnicianProfile
-from service_requests.models import ServiceRequest
 from .forms import RegisterForm, ProfileForm, StyledPasswordChangeForm
 from .models import User
 
@@ -17,25 +15,22 @@ def get_login_destination(user):
     Decide a qué pantalla dirigir al usuario después de entrar.
     """
 
-    # El administrador puede acceder a la página principal
-    # y entrar a administración cuando lo necesite.
+    # Administradores: página principal.
     if user.is_superuser or user.is_staff:
         return "home"
 
-    # Los técnicos deben pasar por revisión antes de trabajar.
+    # Técnicos: solicitudes si están aprobados;
+    # perfil si aún están en revisión.
     if user.role == User.Role.TECNICO:
         profile = getattr(user, "technician_profile", None)
 
         if profile and profile.status == TechnicianProfile.Status.APROBADO:
             return "service_requests:list"
 
-        # Los técnicos pendientes o con correcciones
-        # pueden consultar el estado de su perfil.
         return "accounts:profile"
 
-    # Los clientes entran a Explorar.
-    # Reutilizamos el dashboard como página de descubrimiento.
-    return "accounts:dashboard"
+    # Clientes: catálogo de servicios.
+    return "catalog:catalog"
 
 
 def register(request):
@@ -145,77 +140,3 @@ class ServiGoPasswordChangeView(PasswordChangeView):
         )
 
         return super().form_valid(form)
-
-
-@login_required
-def dashboard(request):
-    """
-    Página Explorar para clientes.
-    Conservamos esta URL para no romper enlaces existentes.
-    """
-
-    context = {
-        "my_requests": ServiceRequest.objects.filter(
-            requester=request.user
-        ).select_related(
-            "service_type",
-            "assigned_technician"
-        ).order_by("-created_at")[:5],
-
-        "my_requests_count": ServiceRequest.objects.filter(
-            requester=request.user
-        ).count(),
-    }
-
-    if request.user.role == User.Role.TECNICO:
-        context["technician"] = getattr(
-            request.user,
-            "technician_profile",
-            None
-        )
-
-        context["available_requests_count"] = (
-            ServiceRequest.objects.filter(
-                status__in=[
-                    ServiceRequest.Status.PENDIENTE,
-                    ServiceRequest.Status.COTIZADA
-                ]
-            )
-            .exclude(requester=request.user)
-            .count()
-        )
-
-        context["assigned_requests"] = (
-            ServiceRequest.objects.filter(
-                assigned_technician=request.user
-            )
-            .exclude(
-                status=ServiceRequest.Status.COMPLETADA
-            )
-            .order_by("-updated_at")[:5]
-        )
-
-    if (
-        request.user.role == User.Role.ADMINISTRADOR
-        or request.user.is_staff
-    ):
-        context["pending_technicians_count"] = (
-            TechnicianProfile.objects.filter(
-                status=TechnicianProfile.Status.PENDIENTE
-            ).count()
-        )
-
-        context["open_requests_count"] = (
-            ServiceRequest.objects.filter(
-                status__in=[
-                    ServiceRequest.Status.PENDIENTE,
-                    ServiceRequest.Status.COTIZADA
-                ]
-            ).count()
-        )
-
-    return render(
-        request,
-        "accounts/dashboard.html",
-        context
-    )

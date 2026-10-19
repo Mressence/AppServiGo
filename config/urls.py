@@ -11,6 +11,7 @@ urlpatterns = [
     path("technicians/", include("technicians.urls")),
     path("catalog/", include("catalog.urls")),
     path("solicitudes/", include("service_requests.urls")),
+    path("comunidad/", include("community.urls")),
 ]
 
 if settings.DEBUG:
