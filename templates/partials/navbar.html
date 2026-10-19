@@ -1,231 +1,68 @@
-<nav class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur">
 
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<nav class="sg-navbar sticky top-0 z-50">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
 
-        <!-- Barra principal -->
-        <div class="flex min-h-16 items-center justify-between py-3">
+        <a href="{% url 'home' %}" class="sg-brand shrink-0" aria-label="ServiGo, inicio">
+            <span>Servi</span><span class="sg-brand-accent">Go!!</span>
+        </a>
 
-            <!-- Logo -->
-            <a
-                href="/"
-                class="text-2xl font-black tracking-tight text-slate-900"
-            >
-                Servi<span class="text-servigo-600">Go!!</span>
-            </a>
+        <div class="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
+         
 
+            {% if user.is_authenticated %}
 
-            <!-- Menú escritorio -->
-            <div class="hidden items-center gap-2 md:flex">
+                <a href="{% url 'community:list' %}" class="sg-nav-link">
+    Comunidad
+</a>
 
-                <!-- Catálogo -->
-                <a
-                    href="{% url 'catalog:catalog' %}"
-                    class="rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
-                >
-                    Catálogo
+                <a href="{% url 'catalog:catalog' %}" class="sg-nav-link">
+                    Servicios
                 </a>
 
-
-                {% if user.is_authenticated %}
-
-                    <!-- Panel -->
-                    <a
-                        href="{% url 'accounts:dashboard' %}"
-                        class="rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-                    >
-                        Panel
+                {% if user.role == 'TECNICO' %}
+                    <a href="{% url 'service_requests:list' %}" class="sg-nav-link">
+                        Solicitudes profesionales
                     </a>
-
-
-                    <!-- Mi perfil -->
-                    <a
-                        href="{% url 'accounts:profile' %}"
-                        class="rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
-                    >
-                        Mi perfil
+                {% elif user.role != 'ADMINISTRADOR' and not user.is_staff %}
+                    <a href="{% url 'service_requests:list' %}" class="sg-nav-link">
+                        Mis solicitudes
                     </a>
-
-
-                    <!-- Salir -->
-                    <a
-                        href="{% url 'accounts:logout' %}"
-                        class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
-                    >
-                        Salir
-                    </a>
-
-                {% else %}
-
-                    <!-- Ingresar -->
-                    <a
-                        href="{% url 'accounts:login' %}"
-                        class="rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
-                    >
-                        Ingresar
-                    </a>
-
-
-                    <!-- Crear cuenta -->
-                    <a
-                        href="{% url 'accounts:register' %}"
-                        class="rounded-xl bg-servigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-servigo-700"
-                    >
-                        Crear cuenta
-                    </a>
-
                 {% endif %}
 
-            </div>
-
-
-            <!-- Botón menú móvil -->
-            <button
-                id="mobile-menu-button"
-                type="button"
-                class="inline-flex items-center justify-center rounded-xl p-2 text-slate-700 transition hover:bg-slate-100 md:hidden"
-                aria-label="Abrir menú"
-                aria-expanded="false"
-            >
-
-                <svg
-                    id="menu-open-icon"
-                    class="h-6 w-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M4 6h16M4 12h16M4 18h16"
-                    />
-                </svg>
-
-                <svg
-                    id="menu-close-icon"
-                    class="hidden h-6 w-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                    />
-                </svg>
-
-            </button>
-
-        </div>
-
-
-        <!-- Menú móvil -->
-        <div
-            id="mobile-menu"
-            class="hidden border-t border-slate-200 py-4 md:hidden"
-        >
-
-            <div class="flex flex-col gap-2">
-
-                <!-- Catálogo -->
-                <a
-                    href="{% url 'catalog:catalog' %}"
-                    class="rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-                >
-                    Catálogo
+                <a href="{% url 'accounts:profile' %}" class="sg-nav-link">
+                    <span class="sg-profile-icon" aria-hidden="true">{{ user.username|first|upper }}</span>
+                    <span>Mi perfil</span>
                 </a>
 
-
-                {% if user.is_authenticated %}
-
-                    <!-- Panel -->
-                    <a
-                        href="{% url 'accounts:dashboard' %}"
-                        class="rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-                    >
-                        Panel
+                {% if user.is_staff or user.role == 'ADMINISTRADOR' %}
+                    <a href="{% url 'admin:index' %}" class="sg-nav-link">
+                        Administración
                     </a>
-
-
-                    <!-- Mi perfil -->
-                    <a
-                        href="{% url 'accounts:profile' %}"
-                        class="rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-                    >
-                        Mi perfil
-                    </a>
-
-
-                    <!-- Salir -->
-                    <a
-                        href="{% url 'accounts:logout' %}"
-                        class="mt-2 rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-slate-700"
-                    >
-                        Salir
-                    </a>
-
-                {% else %}
-
-                    <!-- Ingresar -->
-                    <a
-                        href="{% url 'accounts:login' %}"
-                        class="rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-                    >
-                        Ingresar
-                    </a>
-
-
-                    <!-- Crear cuenta -->
-                    <a
-                        href="{% url 'accounts:register' %}"
-                        class="rounded-xl bg-servigo-600 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-servigo-700"
-                    >
-                        Crear cuenta
-                    </a>
-
                 {% endif %}
 
-            </div>
+                <form method="post" action="{% url 'accounts:logout' %}" class="inline-flex">
+                    {% csrf_token %}
+                    <button type="submit" class="sg-button sg-button-danger sg-button-sm">
+                        Salir
+                    </button>
+                </form>
+
+            {% else %}
+
+                <a href="{% url 'catalog:catalog' %}" class="sg-nav-link">
+                    Servicios
+                </a>
+
+                <a href="{% url 'accounts:login' %}" class="sg-nav-link">
+                    Ingresar
+                </a>
+
+                <a href="{% url 'accounts:register' %}" class="sg-button sg-button-primary sg-button-sm">
+                    Crear cuenta
+                </a>
+
+            {% endif %}
 
         </div>
-
     </div>
-
 </nav>
-
-
-<script>
-    const mobileMenuButton =
-        document.getElementById("mobile-menu-button");
-
-    const mobileMenu =
-        document.getElementById("mobile-menu");
-
-    const menuOpenIcon =
-        document.getElementById("menu-open-icon");
-
-    const menuCloseIcon =
-        document.getElementById("menu-close-icon");
-
-
-    mobileMenuButton.addEventListener("click", function () {
-
-        const isOpen =
-            !mobileMenu.classList.contains("hidden");
-
-        mobileMenu.classList.toggle("hidden");
-
-        menuOpenIcon.classList.toggle("hidden");
-
-        menuCloseIcon.classList.toggle("hidden");
-
-        mobileMenuButton.setAttribute(
-            "aria-expanded",
-            String(!isOpen)
-        );
-
-    });
-</script>

@@ -1,80 +1,350 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="es">
 
+<html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#123D35">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<title>{% block title %}ServiGo!!{% endblock %}</title>
 
-    <title>
-        {% block title %}
-            ServiGo!!
-        {% endblock %}
-    </title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+<script>
+    (() => {
+        try {
+            const saved = localStorage.getItem("servigo-theme");
+            const valid = ["dark", "light", "system"].includes(saved);
+            const preference = valid ? saved : "system";
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        servigo: {
-                            50: "#ecfdf5",
-                            100: "#d1fae5",
-                            500: "#10b981",
-                            600: "#059669",
-                            700: "#047857",
-                            900: "#064e3b"
-                        }
+            const theme = preference === "system"
+                ? (window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark"
+                    : "light")
+                : preference;
+
+            document.documentElement.dataset.theme = theme;
+        } catch (error) {
+            document.documentElement.dataset.theme = "light";
+        }
+    })();
+
+    tailwind = window.tailwind || {};
+</script>
+
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+    tailwind.config = {
+        darkMode: ["selector", '[data-theme="dark"]'],
+        theme: {
+            extend: {
+                colors: {
+                    servigo: {
+                        50: "#edf7f1",
+                        100: "#d7ecdf",
+                        200: "#b4dbc5",
+                        300: "#83c3a3",
+                        400: "#4eaa80",
+                        500: "#268760",
+                        600: "#176b50",
+                        700: "#155640",
+                        800: "#144535",
+                        900: "#123D35"
                     }
                 }
             }
         }
-    </script>
+    };
+</script>
 
-    <link
-        rel="stylesheet"
-        href="{% static 'css/app.css' %}"
-    >
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
+
+<style>
+    :root {
+        color-scheme: light;
+        --sg-bg: #f4f7f4;
+        --sg-surface: #ffffff;
+        --sg-text: #24332b;
+        --sg-muted: #64746a;
+        --sg-border: #dce6de;
+        --sg-primary: #176b50;
+        --sg-primary-hover: #123d35;
+        --sg-nav: #ffffff;
+        --sg-shadow: 0 4px 20px rgb(18 61 53 / 5%);
+    }
+
+    :root[data-theme="dark"] {
+        color-scheme: dark;
+        --sg-bg: #111916;
+        --sg-surface: #1b2520;
+        --sg-text: #e8f0eb;
+        --sg-muted: #b1c0b6;
+        --sg-border: #34453a;
+        --sg-primary: #4cc493;
+        --sg-primary-hover: #68d7a8;
+        --sg-nav: #17211b;
+        --sg-shadow: 0 4px 20px rgb(0 0 0 / 15%);
+    }
+
+    html {
+        min-height: 100%;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        min-height: 100vh;
+        background: var(--sg-bg) !important;
+        color: var(--sg-text) !important;
+        transition: background-color .2s ease, color .2s ease;
+    }
+
+    body, body * {
+        border-color: var(--sg-border);
+    }
+
+    body main,
+    body section,
+    body article,
+    body aside,
+    body nav,
+    body footer,
+    body header,
+    body form,
+    body input,
+    body textarea,
+    body select,
+    body button,
+    body a,
+    body div {
+        transition-property: background-color, border-color, color, box-shadow;
+        transition-duration: .18s;
+        transition-timing-function: ease;
+    }
+
+    /* Superficies comunes */
+    [data-theme="dark"] .bg-white {
+        background-color: var(--sg-surface) !important;
+    }
+
+    [data-theme="dark"] .bg-slate-50,
+    [data-theme="dark"] .bg-slate-100,
+    [data-theme="dark"] .bg-gray-50,
+    [data-theme="dark"] .bg-gray-100 {
+        background-color: var(--sg-bg) !important;
+    }
+
+    [data-theme="dark"] .text-slate-800,
+    [data-theme="dark"] .text-slate-900,
+    [data-theme="dark"] .text-gray-900,
+    [data-theme="dark"] .text-gray-800,
+    [data-theme="dark"] .text-gray-700 {
+        color: var(--sg-text) !important;
+    }
+
+    [data-theme="dark"] .text-slate-600,
+    [data-theme="dark"] .text-slate-500,
+    [data-theme="dark"] .text-gray-600,
+    [data-theme="dark"] .text-gray-500 {
+        color: var(--sg-muted) !important;
+    }
+
+    [data-theme="dark"] .border-slate-100,
+    [data-theme="dark"] .border-slate-200,
+    [data-theme="dark"] .border-gray-100,
+    [data-theme="dark"] .border-gray-200,
+    [data-theme="dark"] .border-gray-300 {
+        border-color: var(--sg-border) !important;
+    }
+
+    /* Formularios */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    textarea,
+    select {
+        border-radius: .65rem;
+    }
+
+    [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    [data-theme="dark"] textarea,
+    [data-theme="dark"] select {
+        background-color: var(--sg-surface);
+        color: var(--sg-text);
+        border-color: var(--sg-border);
+    }
+
+    [data-theme="dark"] input::placeholder,
+    [data-theme="dark"] textarea::placeholder {
+        color: var(--sg-muted);
+        opacity: 1;
+    }
+
+    [data-theme="dark"] input[type="file"] {
+        color: var(--sg-text);
+    }
+
+    [data-theme="dark"] option {
+        background-color: var(--sg-surface);
+        color: var(--sg-text);
+    }
+
+    /* Botón de tema */
+    .theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+        padding: .55rem .85rem;
+        border: 1px solid var(--sg-border);
+        border-radius: .75rem;
+        background: var(--sg-surface);
+        color: var(--sg-text);
+        font-size: .875rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .theme-toggle:hover {
+        border-color: var(--sg-primary);
+        box-shadow: var(--sg-shadow);
+    }
+
+    .theme-toggle:focus-visible {
+        outline: 3px solid var(--sg-primary);
+        outline-offset: 3px;
+    }
+
+    /* Mensajes */
+    .servigo-message {
+        background: var(--sg-surface);
+        color: var(--sg-text);
+        border: 1px solid var(--sg-border);
+        border-left: 4px solid var(--sg-primary);
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: .75rem;
+        box-shadow: var(--sg-shadow);
+    }
+
+    /* Evitar animaciones si el usuario lo prefiere */
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+
+        body, body * {
+            transition: none !important;
+        }
+    }
+</style>
+
 </head>
 
+<body class="min-h-screen bg-slate-50 text-slate-800">
 
-<body class="min-h-screen overflow-x-hidden bg-slate-50 text-slate-800">
-
-    {% include "partials/navbar.html" %}
-
-
-    {% if messages %}
-        <div class="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
-
-            {% for message in messages %}
-
-                <div class="mb-3 rounded-2xl border border-emerald-100 bg-white px-4 py-4 text-sm shadow-sm sm:px-5">
-
-                    {{ message }}
-
-                </div>
-
-            {% endfor %}
-
-        </div>
-    {% endif %}
+{% include "partials/navbar.html" %}
 
 
-    <main class="w-full">
-        {% block content %}
-        {% endblock %}
-    </main>
+{% if messages %}
+    <div class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8">
+        {% for message in messages %}
+            <div class="servigo-message text-sm">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+{% include "partials/footer.html" %}
 
 
-    {% include "partials/footer.html" %}
+<script>
+    (() => {
+        const root = document.documentElement;
+        const preferenceSelect = document.getElementById("theme-preference");
+
+        function resolveTheme(preference) {
+            if (preference === "system") {
+                return window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark"
+                    : "light";
+            }
+
+            return preference;
+        }
+
+        function applyTheme(preference, save = true) {
+            const theme = resolveTheme(preference);
+
+            root.dataset.theme = theme;
+
+            if (save) {
+                try {
+                    localStorage.setItem("servigo-theme", preference);
+                } catch (error) {
+                    // El tema seguirá funcionando durante esta visita.
+                }
+            }
+
+            const themeColor = document.querySelector(
+                'meta[name="theme-color"]'
+            );
+
+            if (themeColor) {
+                themeColor.setAttribute(
+                    "content",
+                    theme === "dark" ? "#111916" : "#123D35"
+                );
+            }
+        }
+
+        let preference = "system";
+
+        try {
+            const saved = localStorage.getItem("servigo-theme");
+
+            if (["light", "dark", "system"].includes(saved)) {
+                preference = saved;
+            }
+        } catch (error) {
+            // Se utiliza la apariencia predeterminada.
+        }
+
+        applyTheme(preference, false);
+
+        if (preferenceSelect) {
+            preferenceSelect.value = preference;
+
+            preferenceSelect.addEventListener("change", () => {
+                applyTheme(preferenceSelect.value);
+            });
+        }
+
+        // Actualiza el tema si el usuario eligió seguir la apariencia del dispositivo.
+        const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+        media.addEventListener("change", () => {
+            let currentPreference = "system";
+
+            try {
+                currentPreference =
+                    localStorage.getItem("servigo-theme") || "system";
+            } catch (error) {
+                // Se mantiene la apariencia predeterminada.
+            }
+
+            if (currentPreference === "system") {
+                applyTheme("system", false);
+            }
+        });
+    })();
+</script>
+
 
 </body>
-
 </html>

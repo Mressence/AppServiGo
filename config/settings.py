@@ -4,13 +4,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-servigo-development-key"
 DEBUG = True
-ALLOWED_HOSTS = [ "localhost",
-    "127.0.0.1",
-    ".trycloudflare.com",]
+ALLOWED_HOSTS = []
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://excel-teacher-findarticles-damaged.trycloudflare.com",
-] 
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -21,6 +16,8 @@ INSTALLED_APPS = [
     "accounts",
     "technicians",
     "catalog",
+    "service_requests",
+    "community",
 ]
 
 MIDDLEWARE = [
@@ -68,12 +65,12 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
 
 LOGIN_URL = "accounts:login"
-LOGIN_REDIRECT_URL = "accounts:dashboard"
+LOGIN_REDIRECT_URL = "catalog:catalog"
 LOGOUT_REDIRECT_URL = "home"
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"

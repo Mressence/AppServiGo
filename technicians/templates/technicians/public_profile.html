@@ -1,0 +1,140 @@
+ 
+{% extends "base.html" %}
+
+{% block title %}Perfil profesional | ServiGo{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+
+    <a href="{% url 'catalog:catalog' %}"
+       class="text-sm font-semibold text-emerald-700 hover:underline">
+        ← Volver al catálogo
+    </a>
+
+    <div class="mt-6 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+
+        <div class="bg-emerald-700 px-6 py-8 text-white sm:px-8">
+            <p class="text-sm font-semibold uppercase tracking-wide text-emerald-100">
+                Técnico verificado
+            </p>
+
+            <h1 class="mt-2 text-3xl font-bold">
+                {{ profile.user.get_full_name|default:profile.user.username }}
+            </h1>
+
+            <p class="mt-2 text-emerald-50">
+                {{ profile.professional_title }}
+            </p>
+
+            {% if profile.category %}
+                <span class="mt-4 inline-block rounded-full bg-white/15 px-3 py-1 text-sm">
+                    {{ profile.category.name }}
+                </span>
+            {% endif %}
+        </div>
+
+        <div class="grid gap-8 p-6 sm:p-8 md:grid-cols-3">
+
+            <div class="space-y-5 md:col-span-2">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+                        Sobre el profesional
+                    </h2>
+                    <p class="mt-2 whitespace-pre-line leading-7 text-gray-600 dark:text-gray-300">
+                        {{ profile.description|default:"Este profesional todavía no ha añadido una descripción." }}
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+                        Experiencia
+                    </h2>
+                    <p class="mt-2 text-gray-600 dark:text-gray-300">
+                        {{ profile.experience }} año{{ profile.experience|pluralize }} de experiencia
+                    </p>
+                </div>
+
+                {% if profile.phone %}
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+                            Teléfono profesional
+                        </h2>
+                        <p class="mt-2 text-gray-600 dark:text-gray-300">
+                            {{ profile.phone }}
+                        </p>
+                    </div>
+                {% endif %}
+
+                <div class="pt-2">
+                    <a href="{% url 'service_requests:create' %}"
+                       class="inline-flex rounded-lg bg-emerald-600 px-5 py-3 font-semibold text-white transition hover:bg-emerald-700">
+                        Solicitar un servicio
+                    </a>
+                </div>
+            </div>
+
+            <aside class="rounded-xl bg-gray-50 p-5 dark:bg-gray-800">
+                <h2 class="font-bold text-gray-900 dark:text-gray-100">
+                    Valoraciones
+                </h2>
+
+                <p class="mt-3 text-3xl font-bold text-emerald-700">
+                    {% if average_rating %}
+                        {{ average_rating|floatformat:1 }}
+                    {% else %}
+                        —
+                    {% endif %}
+                    <span class="text-lg text-amber-500">★</span>
+                </p>
+
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                    {{ review_count }} reseña{{ review_count|pluralize }}
+                </p>
+            </aside>
+
+        </div>
+    </div>
+
+    <section class="mt-10">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Opiniones de clientes
+        </h2>
+
+        {% for review in reviews %}
+            <article class="mt-4 rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">
+                        {{ review.reviewer.get_full_name|default:review.reviewer.username }}
+                    </p>
+
+                    <p class="text-amber-500">
+                        {% for _ in "12345" %}
+                            {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
+
+                {% if review.comment %}
+                    <p class="mt-3 whitespace-pre-line text-gray-600 dark:text-gray-300">
+                        {{ review.comment }}
+                    </p>
+                {% else %}
+                    <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+                        Sin comentario escrito.
+                    </p>
+                {% endif %}
+            </article>
+        {% empty %}
+            <div class="mt-4 rounded-xl border border-dashed border-gray-300 p-8 text-center dark:border-gray-700">
+                <p class="font-semibold text-gray-700 dark:text-gray-200">
+                    Todavía no hay reseñas
+                </p>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    Las opiniones aparecerán cuando los clientes completen servicios y dejen sus valoraciones.
+                </p>
+            </div>
+        {% endfor %}
+    </section>
+
+</section>
+{% endblock %}
