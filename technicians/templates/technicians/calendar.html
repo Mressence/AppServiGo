@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Calendario ServiGo!!{% endblock %}
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+<section class="mx-auto max-w-7xl px-4 py-10">
+  <div class="flex flex-wrap items-end justify-between gap-3"><div><p class="font-bold uppercase tracking-widest text-emerald-700">Agenda ServiGo</p><h1 class="mt-2 text-3xl font-black">{% if public_technician %}Disponibilidad de {{ public_technician.user.get_full_name|default:public_technician.user.username }}{% else %}Mi calendario de citas{% endif %}</h1><p class="mt-2 text-slate-500">{% if public_technician %}Verde: hay horarios libres. Rojo: cita confirmada. Naranja: horario solicitado pendiente de cotización o confirmación. Selecciona un día verde para continuar.{% else %}Consulta tus citas, horarios solicitados y trabajos programados.{% endif %}</p></div>
+  {% if public_technician %}<a href="{% url 'technicians:public_profile' public_technician.pk %}" class="rounded-xl border px-4 py-2 font-bold">Ver perfil</a>{% elif user.role == 'TECNICO' %}<a href="{% url 'technicians:availability' %}" class="rounded-xl bg-emerald-700 px-4 py-2 font-bold text-white">Configurar disponibilidad</a>{% endif %}</div>
+  <div class="mt-7 rounded-2xl border bg-white p-3 shadow-sm sm:p-6"><div id="calendar"></div></div>
+  {% if not public_technician %}<div class="mt-6 rounded-2xl border bg-white p-6"><h2 class="text-xl font-black">Próximas citas</h2><div class="mt-4 divide-y">{% for item in appointments %}<a href="{% url 'service_requests:appointment_detail' item.pk %}" class="flex flex-wrap justify-between gap-3 py-4"><span><strong>{{ item.service_request.service_type.name }}</strong><span class="block text-sm text-slate-500">{{ item.start_at|date:"d/m/Y H:i" }}–{{ item.end_at|date:"H:i" }}</span></span><span class="text-sm font-bold text-emerald-700">{{ item.get_status_display }}</span></a>{% empty %}<p class="text-slate-500">No hay citas registradas.</p>{% endfor %}</div></div>{% endif %}
+</section>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script><script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/locales-all.global.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const el = document.getElementById("calendar");
+  if (!el || !window.FullCalendar) return;
+  const publicMode = {% if public_technician %}true{% else %}false{% endif %};
+  const techId = "{% if public_technician %}{{ public_technician.pk }}{% endif %}";
+  const selectedRequestId = "{% if selected_request %}{{ selected_request.pk }}{% endif %}";
+  const eventsUrl = publicMode ? "{% url 'technicians:calendar_events' %}?tecnico=" + encodeURIComponent(techId) + (selectedRequestId ? "&solicitud=" + encodeURIComponent(selectedRequestId) : "") : "{% url 'technicians:calendar_events' %}";
+  const calendar = new FullCalendar.Calendar(el, {
+    initialView: "dayGridMonth", locale: "es", height: "auto", firstDay: 1,
+    headerToolbar: {left:"prev,next today",center:"title",right:"dayGridMonth,timeGridWeek,listWeek"},
+    buttonText: {today:"Hoy",month:"Mes",week:"Semana",list:"Agenda"},
+    events: eventsUrl,
+    dateClick: function(info) {
+      if (publicMode) {
+        const selectedDate = info.dateStr.slice(0, 10);
+        if (selectedRequestId) {
+          window.location.href = "/solicitudes/" + selectedRequestId + "/cita/nueva/?fecha=" + selectedDate;
+        } else {
+          const target = "{% if public_technician %}{{ public_technician.user.pk }}{% endif %}";
+          window.location.href = "{% url 'service_requests:create' %}?tecnico=" + target + "&fecha=" + selectedDate;
+        }
+      }
+    },
+    eventClick: function(info) {
+      if (publicMode) { info.jsEvent.preventDefault(); return; }
+      if (info.event.url) { info.jsEvent.preventDefault(); window.location.href = info.event.url; }
+    }
+  });
+  calendar.render();
+});
+</script>
+{% endblock %}

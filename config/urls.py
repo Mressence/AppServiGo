@@ -12,6 +12,8 @@ urlpatterns = [
     path("catalog/", include("catalog.urls")),
     path("solicitudes/", include("service_requests.urls")),
     path("comunidad/", include("community.urls")),
+    path("facturacion/", include("billing.urls")),
+    path("notificaciones/", include("notifications.urls")),
 ]
 
 if settings.DEBUG:

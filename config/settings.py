@@ -18,6 +18,8 @@ INSTALLED_APPS = [
     "catalog",
     "service_requests",
     "community",
+    "billing",
+    "notifications",
 ]
 
 MIDDLEWARE = [

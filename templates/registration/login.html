@@ -10,6 +10,7 @@
         </div>
         <form method="post" class="space-y-5">
             {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
             <div>
                 <label class="mb-2 block text-sm font-semibold">Usuario</label>
                 <input name="username" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-emerald-500 focus:bg-white" placeholder="Tu usuario">

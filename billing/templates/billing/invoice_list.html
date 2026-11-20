@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Facturas | ServiGo!!{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-5xl px-4 py-10"><h1 class="text-3xl font-black">Facturas emitidas</h1><div class="mt-6 space-y-3">{% for invoice in invoices %}<a href="{% url 'billing:detail' invoice.pk %}" class="block rounded-2xl border bg-white p-5"><div class="flex flex-wrap justify-between gap-3"><div><strong>{{ invoice.invoice_number }}</strong><p class="text-sm text-slate-500">{{ invoice.description }} · {{ invoice.issued_at|date:"d/m/Y" }}</p></div><span class="font-bold">B/. {{ invoice.amount }}</span></div></a>{% empty %}<p class="rounded-2xl border bg-white p-8 text-slate-500">Todavía no has generado facturas. Se registran cuando descargas una factura de un servicio completado.</p>{% endfor %}</div></section>
+{% endblock %}

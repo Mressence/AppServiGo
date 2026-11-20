@@ -20,13 +20,23 @@
                 </a>
 
                 {% if user.role == 'TECNICO' %}
-                    <a href="{% url 'service_requests:list' %}" class="sg-nav-link">
-                        Solicitudes profesionales
-                    </a>
+                    <a href="{% url 'service_requests:list' %}" class="sg-nav-link">Mis trabajos</a>
+                    <a href="{% url 'technicians:calendar' %}" class="sg-nav-link">Calendario</a>
+                    <a href="{% url 'technicians:availability' %}" class="sg-nav-link">Disponibilidad</a>
                 {% elif user.role != 'ADMINISTRADOR' and not user.is_staff %}
-                    <a href="{% url 'service_requests:list' %}" class="sg-nav-link">
-                        Mis solicitudes
-                    </a>
+                    <a href="{% url 'service_requests:list' %}" class="sg-nav-link">Mis solicitudes</a>
+                    <a href="{% url 'service_requests:appointment_list' %}" class="sg-nav-link">Mis citas</a>
+                    <a href="{% url 'technicians:calendar' %}" class="sg-nav-link">Calendario</a>
+                {% else %}
+                    <a href="{% url 'technicians:calendar' %}" class="sg-nav-link">Calendario</a>
+                {% endif %}
+
+                <a href="{% url 'notifications:list' %}" class="sg-nav-link">
+                    Notificaciones
+                    {% if user.unread_notifications_count %}<span class="ml-1 rounded-full bg-rose-600 px-2 py-0.5 text-xs font-bold text-white">{{ user.unread_notifications_count }}</span>{% endif %}
+                </a>
+                {% if user.role != 'TECNICO' %}
+                    <a href="{% url 'billing:list' %}" class="sg-nav-link">Facturas</a>
                 {% endif %}
 
                 <a href="{% url 'accounts:profile' %}" class="sg-nav-link">
