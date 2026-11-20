@@ -1,4 +1,4 @@
-# ServiGo!! — V2
+# ServiGo!! — V3
 
 Aplicación web desarrollada con Django para conectar clientes con profesionales, facilitar la contratación de servicios y ofrecer un espacio comunitario para compartir preguntas y consejos sobre mantenimiento, reparaciones y mejoras del hogar.
 
