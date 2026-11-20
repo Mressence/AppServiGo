@@ -1,0 +1,141 @@
+
+{% extends "base.html" %}
+
+{% block title %}Notificaciones | ServiGo!!{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Modo oscuro: tarjetas de notificaciones */
+    [data-theme="dark"] .notification-card {
+        background-color: #17231f !important;
+        border-color: #34483f !important;
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] .notification-card.is-unread {
+        background-color: #1b3028 !important;
+        border-color: #176b4a !important;
+    }
+
+    [data-theme="dark"] .notification-card strong {
+        color: #f8fafc !important;
+    }
+
+    [data-theme="dark"] .notification-card .notification-date {
+        color: #a8b5ae !important;
+    }
+
+    [data-theme="dark"] .notification-card .notification-message {
+        color: #d1ddd6 !important;
+    }
+
+    [data-theme="dark"] .notification-card .notification-type {
+        color: #34d399 !important;
+    }
+
+    [data-theme="dark"] .notification-button {
+        color: #e2e8f0;
+        border-color: #475569;
+        background-color: #17231f;
+    }
+
+    [data-theme="dark"] .notification-empty {
+        background-color: #17231f;
+        border-color: #34483f;
+        color: #cbd5e1;
+    }
+</style>
+
+<section class="mx-auto max-w-4xl px-4 py-10">
+
+    <!-- Encabezado -->
+    <div class="flex flex-wrap items-center justify-between gap-3">
+
+        <div>
+            <p class="text-sm font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+                Centro de avisos
+            </p>
+
+            <h1 class="text-3xl font-black text-slate-900 dark:text-white">
+                Tus notificaciones
+            </h1>
+
+            <p class="mt-1 text-slate-500 dark:text-slate-400">
+                Recibes avisos según tu función como cliente o técnico.
+            </p>
+        </div>
+
+        <!-- Marcar todas como leídas -->
+        <form method="post" action="{% url 'notifications:read_all' %}">
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="notification-button rounded-xl border border-slate-300 bg-white px-4 py-2 font-bold text-slate-700 transition hover:bg-slate-100 dark:hover:bg-slate-800">
+                Marcar todas como leídas
+            </button>
+        </form>
+
+    </div>
+
+    <!-- Lista de notificaciones -->
+    <div class="mt-7 space-y-3">
+
+        {% for item in notifications %}
+
+            <a
+                href="{% url 'notifications:read' item.pk %}"
+                class="notification-card block rounded-2xl border p-5 transition duration-200 hover:shadow-md
+                {% if not item.is_read %}
+                    is-unread border-emerald-200 bg-emerald-50
+                {% else %}
+                    border-slate-200 bg-white
+                {% endif %}">
+
+                <!-- Título y fecha -->
+                <div class="flex flex-wrap justify-between gap-3">
+
+                    <strong class="text-slate-900">
+                        {{ item.title }}
+                    </strong>
+
+                    <span class="notification-date text-xs text-slate-500">
+                        {{ item.created_at|date:"d/m/Y H:i" }}
+                    </span>
+
+                </div>
+
+                <!-- Mensaje -->
+                <p class="notification-message mt-2 text-sm text-slate-700">
+                    {{ item.message }}
+                </p>
+
+                <!-- Tipo y estado -->
+                <div class="notification-type mt-3 flex items-center gap-2 text-xs font-bold text-emerald-700">
+
+                    <span>
+                        {{ item.get_notification_type_display }}
+                    </span>
+
+                    {% if not item.is_read %}
+                        <span>· NUEVA</span>
+                    {% endif %}
+
+                </div>
+
+            </a>
+
+        {% empty %}
+
+            <p class="notification-empty rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">
+                Todavía no tienes notificaciones.
+            </p>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endblock %}

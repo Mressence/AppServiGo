@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Factura {{ invoice.invoice_number }} | ServiGo!!{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-3xl px-4 py-10"><div class="rounded-3xl border bg-white p-7 shadow-sm"><p class="font-bold uppercase tracking-widest text-emerald-700">Factura ServiGo</p><h1 class="mt-2 text-3xl font-black">{{ invoice.invoice_number }}</h1><p class="mt-3">{{ invoice.description }} · B/. {{ invoice.amount }}</p><p class="mt-1 text-sm text-slate-500">Emitida {{ invoice.issued_at|date:"d/m/Y H:i" }}</p><a href="{% url 'billing:download' invoice.service_request_id %}" class="mt-6 inline-flex rounded-xl bg-emerald-700 px-5 py-3 font-bold text-white">Generar / descargar PDF</a></div></section>
+{% endblock %}

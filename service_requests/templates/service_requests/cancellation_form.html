@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Cancelar cita | ServiGo!!{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-xl px-4 py-10"><form method="post" class="rounded-3xl border bg-white p-7 shadow-sm">{% csrf_token %}<h1 class="text-2xl font-black">Cancelar cita #{{ appointment.pk }}</h1><p class="mt-2 text-slate-500">La otra parte recibirá una notificación. Indica el motivo de la cancelación.</p>{{ form.non_field_errors }}<div class="mt-5"><label class="mb-2 block font-semibold">Motivo</label>{{ form.reason }}{% for error in form.reason.errors %}<p class="text-sm text-red-600">{{ error }}</p>{% endfor %}</div><button class="mt-5 rounded-xl bg-red-700 px-5 py-3 font-bold text-white">Confirmar cancelación</button></form></section>
+{% endblock %}

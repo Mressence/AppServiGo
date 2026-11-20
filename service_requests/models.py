@@ -33,6 +33,8 @@ class ServiceRequest(models.Model):
     description = models.TextField("Descripción de la necesidad")
     address = models.TextField("Dirección donde se prestará el servicio")
     preferred_date = models.DateField("Fecha preferida", null=True, blank=True)
+    requested_start_at = models.DateTimeField("Horario solicitado", null=True, blank=True)
+    requested_end_at = models.DateTimeField("Fin del horario solicitado", null=True, blank=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDIENTE)
     assigned_technician = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="assigned_service_requests", verbose_name="Técnico asignado")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -123,3 +125,58 @@ class TechnicianReview(models.Model):
 
     def __str__(self):
         return f"{self.technician} — {self.rating}/5"
+
+class Appointment(models.Model):
+    class Status(models.TextChoices):
+        PROGRAMADA = "PROGRAMADA", "Programada"
+        CONFIRMADA = "CONFIRMADA", "Confirmada"
+        COMPLETADA = "COMPLETADA", "Completada"
+        CANCELADA = "CANCELADA", "Cancelada"
+
+    service_request = models.OneToOneField(ServiceRequest, on_delete=models.PROTECT, related_name="appointment", verbose_name="Solicitud")
+    technician = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="technician_appointments")
+    start_at = models.DateTimeField("Inicio")
+    end_at = models.DateTimeField("Finalización")
+    status = models.CharField(max_length=15, choices=Status.choices, default=Status.PROGRAMADA)
+    notes = models.TextField("Notas", blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="created_appointments")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["start_at"]
+        constraints = [models.CheckConstraint(condition=models.Q(start_at__lt=models.F("end_at")), name="appointment_valid_range")]
+        verbose_name = "Cita"
+        verbose_name_plural = "Citas"
+
+    def __str__(self):
+        return f"Cita #{self.service_request_id} · {self.start_at:%d/%m/%Y %H:%M}"
+
+
+class Cancellation(models.Model):
+    service_request = models.ForeignKey(ServiceRequest, on_delete=models.PROTECT, related_name="cancellations")
+    appointment = models.ForeignKey(Appointment, on_delete=models.SET_NULL, null=True, blank=True, related_name="cancellations")
+    cancelled_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="service_cancellations")
+    reason = models.TextField("Motivo")
+    previous_status = models.CharField(max_length=20, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Cancelación"
+        verbose_name_plural = "Cancelaciones"
+
+
+class ServiceHistory(models.Model):
+    service_request = models.ForeignKey(ServiceRequest, on_delete=models.CASCADE, related_name="history")
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="service_history_actions")
+    action = models.CharField(max_length=100)
+    previous_value = models.TextField(blank=True)
+    new_value = models.TextField(blank=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Movimiento de historial"
+        verbose_name_plural = "Historial de servicios"

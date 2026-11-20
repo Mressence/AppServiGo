@@ -202,4 +202,28 @@ El servidor de desarrollo de Django no debe utilizarse como servidor de producci
 
 ## Estado del proyecto
 
-ServiGo!! V2 integra cuentas, perfiles profesionales, catálogo de servicios, solicitudes, cotizaciones y una comunidad con herramientas de moderación.
+ServiGo!! V3 integra cuentas, perfiles profesionales, catálogo de servicios, solicitudes individuales, cotizaciones, agenda, disponibilidad, cancelaciones, trazabilidad, notificaciones y facturación PDF, además de la comunidad con herramientas de moderación.
+
+## ServiGo V3 — agenda, disponibilidad y notificaciones
+
+La versión V3 conserva las aplicaciones existentes y añade:
+
+- Solicitudes vinculadas a un único técnico seleccionado por el cliente.
+- Calendario público de disponibilidad del técnico; los días libres aparecen en verde y las citas ocupadas se muestran sin exponer datos de otros clientes.
+- Selección de fecha y horario desde el calendario público del técnico. El cliente pasa directamente al formulario para explicar el trabajo y enviar la solicitud al profesional elegido. En el formulario general, los horarios también se cargan al elegir técnico y fecha.
+- Los horarios seleccionados se muestran como reservas provisionales en naranja mientras se cotiza; las citas confirmadas se muestran como ocupadas. No se exponen los datos de otros clientes.
+- Horarios semanales, bloqueos por ausencias y validación de conflictos tanto al solicitar como al aceptar/programar una cita.
+- Al aceptar una cotización con fecha y hora solicitadas, la cita se crea automáticamente. Si todavía no hay fecha, el cliente puede abrir el calendario del mismo técnico desde el detalle del servicio y seleccionar el día.
+- Citas, confirmación, reprogramación, cancelación con motivo e historial de cambios.
+- Notificaciones separadas para cliente y técnico sobre solicitudes, cotizaciones, aceptación, citas, reprogramaciones, cancelaciones y estados del trabajo.
+- El calendario personal muestra tanto las citas como las solicitudes con un horario provisional, para que cliente y técnico puedan seguir el proceso.
+- Facturas PDF generadas en memoria al pulsar descargar mediante ReportLab. El archivo PDF no se guarda en `media/`.
+
+### Migraciones nuevas
+
+- `technicians/0005_availability.py`
+- `service_requests/0003_appointments_requested_times_history.py`
+- `billing/0001_initial.py`
+- `notifications/0001_initial.py`
+
+Instala las dependencias y aplica las migraciones con `pip install -r requirements.txt` y `python manage.py migrate`.

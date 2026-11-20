@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Mis citas | ServiGo!!{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-5xl px-4 py-10"><h1 class="text-3xl font-black">Mis citas</h1><div class="mt-6 space-y-3">{% for item in appointments %}<a href="{% url 'service_requests:appointment_detail' item.pk %}" class="block rounded-2xl border bg-white p-5"><div class="flex flex-wrap justify-between gap-3"><div><strong>{{ item.service_request.service_type.name }}</strong><p class="text-sm text-slate-500">{{ item.start_at|date:"d/m/Y H:i" }} – {{ item.end_at|date:"H:i" }}</p></div><span class="font-bold text-emerald-700">{{ item.get_status_display }}</span></div></a>{% empty %}<p class="rounded-2xl border bg-white p-8 text-slate-500">Todavía no tienes citas.</p>{% endfor %}</div></section>
+{% endblock %}

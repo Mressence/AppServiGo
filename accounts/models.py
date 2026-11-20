@@ -14,5 +14,11 @@ class User(AbstractUser):
     address = models.TextField("Dirección", blank=True)
     profile_photo = models.ImageField("Foto de perfil", upload_to="profile_photos/", blank=True, null=True)
 
+    @property
+    def unread_notifications_count(self):
+        if not self.pk:
+            return 0
+        return self.notifications.filter(is_read=False).count()
+
     def __str__(self):
         return self.get_full_name() or self.username

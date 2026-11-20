@@ -1,11 +1,91 @@
 {% extends "base.html" %}
 {% block title %}Solicitar servicio | ServiGo!!{% endblock %}
 {% block content %}
-<section class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8"><div class="mb-8"><p class="text-sm font-bold uppercase tracking-widest text-emerald-600">Nueva solicitud</p><h1 class="mt-2 text-4xl font-black">Cuéntanos qué necesitas</h1><p class="mt-3 text-slate-500">Describe el trabajo y adjunta fotos o documentos que ayuden a entenderlo. Los técnicos aprobados podrán enviarte cotizaciones.</p></div>
-  <form method="post" enctype="multipart/form-data" class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">{% csrf_token %}{% if form.non_field_errors %}<div class="mb-5 rounded-xl bg-red-50 p-4 text-sm text-red-700">{{ form.non_field_errors }}</div>{% endif %}
-    {% for field in form %}<div class="mb-5"><label class="mb-2 block text-sm font-semibold text-slate-700">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}</div>{% endfor %}
-    <div class="mb-6"><label for="attachments" class="mb-2 block text-sm font-semibold text-slate-700">Fotos o documentos de evidencia (opcional)</label><input id="attachments" name="attachments" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.webp" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3"><p class="mt-2 text-xs leading-5 text-slate-500">Formatos: PDF, JPG, JPEG, PNG o WEBP. Máximo 10 MB por archivo.</p></div>
-    <div class="flex flex-col gap-3 sm:flex-row"><button class="rounded-xl bg-servigo-600 px-6 py-3 font-bold text-white hover:bg-servigo-700">Enviar solicitud</button><a href="{% url 'catalog:catalog' %}" class="rounded-xl border border-slate-200 px-6 py-3 text-center font-bold text-slate-600">Volver al catálogo</a></div>
+<section class="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+  <div class="mb-7">
+    <p class="text-sm font-bold uppercase tracking-widest text-emerald-700">Nueva solicitud</p>
+    <h1 class="mt-2 text-3xl font-black">Describe el trabajo que necesitas</h1>
+    {% if selected_technician %}
+      <p class="mt-2 text-slate-600">Tu solicitud se enviará únicamente a <strong>{{ selected_technician.get_full_name|default:selected_technician.username }}</strong>.</p>
+    {% else %}
+      <p class="mt-2 text-slate-600">Selecciona el profesional que deseas contratar. Solo ese técnico podrá ver y cotizar esta solicitud.</p>
+    {% endif %}
+  </div>
+  <form method="post" enctype="multipart/form-data" class="space-y-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="rounded-xl bg-red-50 p-4 text-sm text-red-700">{{ form.non_field_errors }}</div>{% endif %}
+    <div><label class="mb-2 block font-semibold">{{ form.technician.label }}</label>{{ form.technician }}{% for e in form.technician.errors %}<p class="mt-1 text-sm text-red-600">{{ e }}</p>{% endfor %}</div>
+    <div><label class="mb-2 block font-semibold">{{ form.service_type.label }}</label>{{ form.service_type }}{% for e in form.service_type.errors %}<p class="mt-1 text-sm text-red-600">{{ e }}</p>{% endfor %}</div>
+    <div><label class="mb-2 block font-semibold">{{ form.description.label }}</label>{{ form.description }}{% for e in form.description.errors %}<p class="mt-1 text-sm text-red-600">{{ e }}</p>{% endfor %}</div>
+    <div><label class="mb-2 block font-semibold">{{ form.address.label }}</label>{{ form.address }}{% for e in form.address.errors %}<p class="mt-1 text-sm text-red-600">{{ e }}</p>{% endfor %}</div>
+    <div><label class="mb-2 block font-semibold">{{ form.preferred_date.label }}</label>{{ form.preferred_date }}{% for e in form.preferred_date.errors %}<p class="mt-1 text-sm text-red-600">{{ e }}</p>{% endfor %}</div>
+    {% if not calendar_flow %}
+      <div id="dynamic-schedule" class="hidden rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+        <h2 class="font-bold text-emerald-900">Horario para tu cita</h2>
+        <p id="dynamic-schedule-help" class="mt-1 text-sm text-emerald-800">Selecciona un técnico y una fecha para consultar sus horarios libres.</p>
+        <label for="dynamic-requested-time" class="mt-4 block text-sm font-semibold text-emerald-900">Elige una hora disponible</label>
+        <select id="dynamic-requested-time" name="requested_time" class="mt-2 w-full rounded-xl border border-emerald-200 bg-white px-4 py-3">
+          <option value="">Selecciona un horario</option>
+        </select>
+      </div>
+    {% endif %}
+    {% if calendar_flow %}
+      <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+        <h2 class="font-bold text-emerald-900">Horario para tu cita</h2>
+        <p class="mt-1 text-sm text-emerald-800">Fecha seleccionada: {{ selected_day|date:"l d/m/Y" }}. La cita durará una hora y se confirmará cuando aceptes la cotización.</p>
+        {% if available_slots %}
+          <label for="requested_time" class="mt-4 block text-sm font-semibold text-emerald-900">Elige una hora disponible</label>
+          <select id="requested_time" name="requested_time" required class="mt-2 w-full rounded-xl border border-emerald-200 bg-white px-4 py-3">
+            <option value="">Selecciona un horario</option>
+            {% for value,label in available_slots %}<option value="{{ value }}" {% if request.POST.requested_time == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        {% else %}
+          <p class="mt-3 rounded-xl bg-white p-3 text-sm text-rose-700">Este técnico no tiene horarios libres para el día seleccionado. Regresa al calendario y elige otra fecha.</p>
+        {% endif %}
+      </div>
+    {% endif %}
+    <div><label for="attachments" class="mb-2 block font-semibold">Fotos o documentos (opcional)</label><input id="attachments" name="attachments" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.webp" class="w-full rounded-xl border border-slate-200 px-4 py-3"><p class="mt-1 text-xs text-slate-500">PDF, JPG, JPEG, PNG o WEBP. Máximo 10 MB por archivo.</p></div>
+    <div class="flex flex-wrap gap-3"><button {% if calendar_flow and not available_slots %}disabled{% endif %} class="rounded-xl bg-emerald-700 px-6 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50">Enviar solicitud al técnico</button><a href="{% if selected_technician %}{% url 'technicians:public_calendar' selected_technician.technician_profile.pk %}{% else %}{% url 'catalog:catalog' %}{% endif %}" class="rounded-xl border px-6 py-3 font-bold">Volver</a></div>
   </form>
 </section>
+{% if not calendar_flow %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const technician = document.getElementById("id_technician");
+  const date = document.getElementById("id_preferred_date");
+  const panel = document.getElementById("dynamic-schedule");
+  const select = document.getElementById("dynamic-requested-time");
+  const help = document.getElementById("dynamic-schedule-help");
+  if (!technician || !date || !panel || !select) return;
+  const endpoint = "{% url 'technicians:availability_slots' %}";
+  async function refreshSlots() {
+    select.innerHTML = '<option value="">Selecciona un horario</option>';
+    const tech = technician.value;
+    const day = date.value;
+    if (!tech || !day) { panel.classList.add("hidden"); return; }
+    panel.classList.remove("hidden");
+    help.textContent = "Consultando disponibilidad...";
+    try {
+      const response = await fetch(endpoint + "?tecnico=" + encodeURIComponent(tech) + "&fecha=" + encodeURIComponent(day), {headers: {"X-Requested-With": "XMLHttpRequest"}});
+      if (!response.ok) throw new Error("No se pudo consultar la disponibilidad.");
+      const data = await response.json();
+      data.slots.forEach(slot => {
+        const option = document.createElement("option");
+        option.value = slot.value;
+        option.textContent = slot.label;
+        select.appendChild(option);
+      });
+      help.textContent = data.slots.length
+        ? "El horario se reservará provisionalmente mientras el técnico prepara la cotización."
+        : "Este técnico no tiene horarios libres para esa fecha. Selecciona otro día.";
+    } catch (error) {
+      help.textContent = "No se pudo cargar la disponibilidad. Actualiza la página e inténtalo nuevamente.";
+    }
+  }
+  technician.addEventListener("change", refreshSlots);
+  date.addEventListener("change", refreshSlots);
+  if (technician.value && date.value) refreshSlots();
+});
+</script>
+{% endif %}
 {% endblock %}
